@@ -15,6 +15,10 @@ class appMainWindowTests(unittest.TestCase):
     def test_defaults(self):
         # Test default values of GUI contents
         self.assertEqual(self.form.ui.btn_CamImageImport.text(), "Import Camera Image")
+        self.assertEqual(self.form.ui.btn_DMDMaskGen.text(),"Generate DMD Mask")
+        self.assertEqual(self.form.ui.btn_DMDMaskSave.text(),"Save DMD Mask")
+        self.assertEqual(self.form.ui.btn_Calibrate,"Calibrate")
+        
         
 if __name__ == '__main__':
     unittest.main()
