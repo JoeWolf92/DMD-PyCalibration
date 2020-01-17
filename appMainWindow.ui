@@ -45,7 +45,7 @@
     <property name="currentIndex">
      <number>0</number>
     </property>
-    <widget class="QWidget" name="Calibration">
+    <widget class="QWidget" name="tab_Calibration">
      <attribute name="title">
       <string>Calibration</string>
      </attribute>
@@ -73,7 +73,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="Threshold">
+    <widget class="QWidget" name="tab_Threshold">
      <attribute name="title">
       <string>Threshold</string>
      </attribute>
@@ -101,7 +101,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="Slit">
+    <widget class="QWidget" name="tab_Slit">
      <attribute name="title">
       <string>Slit</string>
      </attribute>
@@ -181,7 +181,7 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="Pinhole">
+    <widget class="QWidget" name="tab_Pinhole">
      <attribute name="title">
       <string>Pinhole</string>
      </attribute>
