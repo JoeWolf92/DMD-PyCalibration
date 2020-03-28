@@ -27,8 +27,8 @@ class appMainWindowTests(unittest.TestCase):
         # Test basic funtionality of the shape recognition sub-system with two test images
         # Image 1 is a black rectangle
         testImage = ShapeRecognition.ShapeDetector("TestImages/BlackRectangle.png", "black")
-        #cv2.imshow("BlackRec",testImage.sourceImage)
-        #cv2.imshow("Threshold BlackRec", testImage.thresholdImage)
+        # cv2.imshow("BlackRec",testImage.sourceImage)
+        # cv2.imshow("Threshold BlackRec", testImage.thresholdImage)
         # cv2.imshow("BlackRecFiltered", cv2.resize(testImage.filteredImage, (960, 540)))
         # cv2.waitKey(3500)
         # cv2.destroyAllWindows()
@@ -38,13 +38,13 @@ class appMainWindowTests(unittest.TestCase):
         self.assertAlmostEqual(testImage.height, 488.5807800292969)
         self.assertAlmostEqual(testImage.positionX, 795.543212890625)
         self.assertAlmostEqual(testImage.positionY, 551.9424438476562)
-        cv2.imshow("BlackRec with Contours", cv2.resize(testImage.colourImage,(960, 540)))
-        cv2.waitKey(3500)
-        cv2.destroyAllWindows()
+        # cv2.imshow("BlackRec with Contours", cv2.resize(testImage.colourImage,(960, 540)))
+        # cv2.waitKey(3500)
+        # cv2.destroyAllWindows()
         # Image 2 is a white rectangle
         testImage = ShapeRecognition.ShapeDetector("TestImages/WhiteRectangle.png", "white")
-        #cv2.imshow("WhiteRec",testImage.sourceImage)
-        #cv2.imshow("Threshold WhiteRec", testImage.thresholdImage)
+        # cv2.imshow("WhiteRec",testImage.sourceImage)
+        # cv2.imshow("Threshold WhiteRec", testImage.thresholdImage)
         # cv2.imshow("WhiteRecFiltered", cv2.resize(testImage.filteredImage, (960, 540)))
         # cv2.waitKey(3500)
         # cv2.destroyAllWindows()
@@ -57,6 +57,10 @@ class appMainWindowTests(unittest.TestCase):
         cv2.imshow("WhiteRec with Contours", cv2.resize(testImage.colourImage,(960, 540)))
         cv2.waitKey(3500)
         cv2.destroyAllWindows()
+
+    def test_CalibrationImageLoad(self):
+        self.form.ui.btn_CamImageImport.click()
+        self.
 
         
 if __name__ == '__main__':

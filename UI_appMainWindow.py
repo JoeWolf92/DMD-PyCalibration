@@ -9,7 +9,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -22,9 +21,10 @@ class Ui_MainWindow(object):
         MainWindow.setToolTipDuration(2)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.view_DMDMaskImage = QtWidgets.QGraphicsView(self.centralwidget)
+        self.view_DMDMaskImage = QtWidgets.QLabel(self.centralwidget)
         self.view_DMDMaskImage.setGeometry(QtCore.QRect(20, 290, 480, 270))
         self.view_DMDMaskImage.setObjectName("view_DMDMaskImage")
+        # 
         self.tab_MaskFunctionality = QtWidgets.QTabWidget(self.centralwidget)
         self.tab_MaskFunctionality.setGeometry(QtCore.QRect(510, 290, 241, 131))
         self.tab_MaskFunctionality.setObjectName("tab_MaskFunctionality")
@@ -131,8 +131,10 @@ class Ui_MainWindow(object):
         self.splitter.setGeometry(QtCore.QRect(16, 20, 751, 241))
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
-        self.view_CameraImage = QtWidgets.QGraphicsView(self.splitter)
+        self.view_CameraImage = QtWidgets.QLabel(self.splitter)
         self.view_CameraImage.setObjectName("view_CameraImage")
+        # 
+        self.splitter.addWidget(self.view_CameraImage)
         self.layoutWidget = QtWidgets.QWidget(self.splitter)
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
