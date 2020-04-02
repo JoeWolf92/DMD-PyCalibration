@@ -14,25 +14,27 @@ class appMainWindowTests(unittest.TestCase):
         # Create the GUI
         self.form = appMainWindow.appMainWindow()
 
-    def test_Defaults(self):
-        # Test default values of GUI contents
-        self.assertEqual(self.form.ui.btn_CamImageImport.text(), "Import Camera Image")
-        self.assertEqual(self.form.ui.btn_DMDMaskGen.text(), "Generate DMD Mask")
-        self.assertEqual(self.form.ui.btn_DMDMaskSave.text(), "Save Current Mask")
-        self.assertEqual(self.form.ui.btn_Calibrate.text(), "Calibrate")
-        self.assertEqual(self.form.ui.cbox_CalibrateCheck.text(), "Lock Calibration?")
-        self.assertEqual(self.form.ui.cbox_CalibrateCheck.isChecked(), False)
+    # def test_Defaults(self):
+    #     # Test default values of GUI contents
+    #     self.assertEqual(self.form.ui.btn_CamImageImport.text(), "Import Camera Image")
+    #     self.assertEqual(self.form.ui.btn_DMDMaskGen.text(), "Generate DMD Mask")
+    #     self.assertEqual(self.form.ui.btn_DMDMaskSave.text(), "Save Current Mask")
+    #     self.assertEqual(self.form.ui.btn_Calibrate.text(), "Calibrate")
+    #     self.assertEqual(self.form.ui.cbox_CalibrateCheck.text(), "Lock Calibration?")
+    #     self.assertEqual(self.form.ui.cbox_CalibrateCheck.isChecked(), False)
         
     def test_ImageRecognition(self):
         # Test basic funtionality of the shape recognition sub-system with two test images
         # Image 1 is a black rectangle
-        testImage = ShapeRecognition.ShapeDetector("TestImages/BlackRectangle.png", "black")
+        testImage = ShapeRecognition.ShapeDetector("./TestImages/BlackRectangle.tiff", False)
         # cv2.imshow("BlackRec",testImage.sourceImage)
         # cv2.imshow("Threshold BlackRec", testImage.thresholdImage)
         # cv2.imshow("BlackRecFiltered", cv2.resize(testImage.filteredImage, (960, 540)))
         # cv2.waitKey(3500)
         # cv2.destroyAllWindows()
         testImage.detectCalibration()
+        cv2.imshow("BlackRec with Contours", cv2.resize(testImage.colourImage,(960, 540)))
+        cv2.waitKey(3500)
         self.assertAlmostEqual(testImage.rotation, -45.19929122924805)
         self.assertAlmostEqual(testImage.width, 850.6590576171875)
         self.assertAlmostEqual(testImage.height, 488.5807800292969)
@@ -42,7 +44,7 @@ class appMainWindowTests(unittest.TestCase):
         # cv2.waitKey(3500)
         # cv2.destroyAllWindows()
         # Image 2 is a white rectangle
-        testImage = ShapeRecognition.ShapeDetector("TestImages/WhiteRectangle.png", "white")
+        testImage = ShapeRecognition.ShapeDetector("./TestImages/WhiteRectangle.tiff", True)
         # cv2.imshow("WhiteRec",testImage.sourceImage)
         # cv2.imshow("Threshold WhiteRec", testImage.thresholdImage)
         # cv2.imshow("WhiteRecFiltered", cv2.resize(testImage.filteredImage, (960, 540)))
@@ -58,9 +60,9 @@ class appMainWindowTests(unittest.TestCase):
         cv2.waitKey(3500)
         cv2.destroyAllWindows()
 
-    def test_CalibrationImageLoad(self):
-        self.form.ui.btn_CamImageImport.click()
-        self.
+    # def test_CalibrationImageLoad(self):
+    #     self.form.ui.btn_CamImageImport.click()
+    #     self.
 
         
 if __name__ == '__main__':

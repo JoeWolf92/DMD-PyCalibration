@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>Vialux_DMD.png</file>
+  </qresource>
+  <qresource prefix="newPrefix2">
+    <file>UoL_logo.jpeg</file>
+  </qresource>
+</RCC>

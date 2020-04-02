@@ -5,7 +5,7 @@ import numpy as np
 class ShapeDetector:
     def __init__(self, filename, shapeColour):
         # Initiate image containing shapes to be identified
-        if shapeColour == "black":
+        if shapeColour:
             self.shapeColour = 1
         else:
             self.shapeColour = 0
@@ -42,7 +42,7 @@ class ShapeDetector:
                 rect = cv2.minAreaRect(cntr)
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
-                cv2.drawContours(self.colourImage,[box],0,(0,255,0),3)
+                # cv2.drawContours(self.colourImage,[box],0,(0,255,0),3)
                 centre = rect[0]
                 self.positionX = centre[0]
                 self.positionY = centre[1]
@@ -50,6 +50,6 @@ class ShapeDetector:
                 self.width = size[0]
                 self.height = size[1]
                 self.rotation = rect[2]
-                cv2.circle(self.colourImage,(round(self.positionX),round(self.positionY)), 5, (0,0,255), -1)
+                # cv2.circle(self.colourImage,(round(self.positionX),round(self.positionY)), 10, (0,0,255), -1)
 
 

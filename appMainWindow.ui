@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>617</height>
+    <width>914</width>
+    <height>656</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,23 +23,13 @@
    <number>2</number>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGraphicsView" name="view_DMDMaskImage">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>290</y>
-      <width>480</width>
-      <height>270</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QTabWidget" name="tab_MaskFunctionality">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>290</y>
-      <width>241</width>
-      <height>131</height>
+      <x>550</x>
+      <y>350</y>
+      <width>331</width>
+      <height>181</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -49,279 +39,253 @@
      <attribute name="title">
       <string>Calibration</string>
      </attribute>
-     <widget class="QPlainTextEdit" name="txt_DMDCalibrationMaskRatio">
+     <widget class="QWidget" name="gridLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>2</x>
-        <y>12</y>
-        <width>80</width>
-        <height>21</height>
+        <x>50</x>
+        <y>20</y>
+        <width>231</width>
+        <height>71</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QLabel" name="label_DMDCalibrationMaskRatio">
-      <property name="geometry">
-       <rect>
-        <x>92</x>
-        <y>12</y>
-        <width>141</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Calibration Mask Ratio</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_CalibrationCentreCircle">
+         <property name="text">
+          <string>Centre Circle Size</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_DMDCalibrationMaskRatio">
+         <property name="text">
+          <string>Calibration Mask Ratio</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPlainTextEdit" name="txt_CentreCircleSize">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPlainTextEdit" name="txt_DMDCalibrationMaskRatio">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_Threshold">
      <attribute name="title">
       <string>Threshold</string>
      </attribute>
-     <widget class="QPlainTextEdit" name="txt_ThresholdLevel">
+     <widget class="QWidget" name="gridLayoutWidget_4">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>104</width>
-        <height>31</height>
+        <x>49</x>
+        <y>20</y>
+        <width>221</width>
+        <height>81</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QLabel" name="label_ThresholdLevel">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>30</y>
-        <width>101</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Threshold Level</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QPlainTextEdit" name="txt_ThresholdLevel">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_ThresholdLevel">
+         <property name="text">
+          <string>Threshold Level</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPlainTextEdit" name="txt_MaskToAdd">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::TextEditorInteraction</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="btn_MaskToAdd">
+         <property name="text">
+          <string>Mask Addition</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_Slit">
      <attribute name="title">
       <string>Slit</string>
      </attribute>
-     <widget class="QSpinBox" name="spinBox_NumberOfSlits">
+     <widget class="QWidget" name="gridLayoutWidget_5">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>0</y>
-        <width>48</width>
-        <height>24</height>
+        <x>50</x>
+        <y>20</y>
+        <width>221</width>
+        <height>101</height>
        </rect>
       </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>4</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_NumberOfSlits">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>0</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Number of Slits</string>
-      </property>
-     </widget>
-     <widget class="QPlainTextEdit" name="txt_SlitWidth">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPlainTextEdit" name="txt_SlitSeparation">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>70</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_SlitWidth">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>40</y>
-        <width>91</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Slit Width (um)</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_SlitSeparation">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>80</y>
-        <width>121</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Slit Separation (um)</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QPlainTextEdit" name="txt_SlitWidth">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QSpinBox" name="spinBox_NumberOfSlits">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPlainTextEdit" name="txt_SlitSeparation">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_SlitSeparation">
+         <property name="text">
+          <string>Slit Separation (um)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_SlitWidth">
+         <property name="text">
+          <string>Slit Width (um)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_NumberOfSlits">
+         <property name="text">
+          <string>Number of Slits</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_Pinhole">
      <attribute name="title">
       <string>Pinhole</string>
      </attribute>
-     <widget class="QSpinBox" name="spinBox_NumberOfPinholes">
+     <widget class="QWidget" name="gridLayoutWidget_6">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>0</y>
-        <width>48</width>
-        <height>24</height>
+        <x>50</x>
+        <y>20</y>
+        <width>221</width>
+        <height>101</height>
        </rect>
       </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>4</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_NumberOfPinholes">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>0</y>
-        <width>121</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Number of Pinholes</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_PinholeRadius">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>40</y>
-        <width>121</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Pinhole Radius (um)</string>
-      </property>
-     </widget>
-     <widget class="QPlainTextEdit" name="txt_PinholeRadius">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPlainTextEdit" name="txt_PinholePitch">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>70</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_PinholePitch">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>80</y>
-        <width>111</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Pinhole Pitch (um)</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_PinholeRadius">
+         <property name="text">
+          <string>Pinhole Radius (um)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QSpinBox" name="spinBox_NumberOfPinholes">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPlainTextEdit" name="txt_PinholeRadius">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPlainTextEdit" name="txt_PinholePitch">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_NumberOfPinholes">
+         <property name="text">
+          <string>Number of Pinholes</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_PinholePitch">
+         <property name="text">
+          <string>Pinhole Pitch (um)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>430</y>
-      <width>191</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QPlainTextEdit" name="txt_DMDSizeXMaskGen"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_DMDSizeXMaskGen">
-         <property name="text">
-          <string>DMD Size X</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QPlainTextEdit" name="txt_DMDSizeYMaskGen"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_DMDSizeYMaskGen">
-         <property name="text">
-          <string>DMD Size Y</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_DMDMaskGen">
-       <property name="text">
-        <string>Generate DMD Mask</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_DMDMaskSave">
-       <property name="text">
-        <string>Save Current Mask</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </widget>
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>-3</x>
-      <y>259</y>
-      <width>781</width>
+      <x>30</x>
+      <y>280</y>
+      <width>861</width>
       <height>31</height>
      </rect>
     </property>
@@ -329,93 +293,321 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSplitter" name="splitter">
+   <widget class="QLabel" name="view_CameraImage">
     <property name="geometry">
      <rect>
-      <x>16</x>
-      <y>20</y>
-      <width>751</width>
-      <height>241</height>
+      <x>10</x>
+      <y>10</y>
+      <width>480</width>
+      <height>270</height>
      </rect>
     </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
-    <widget class="QGraphicsView" name="view_CameraImage"/>
-    <widget class="QWidget" name="layoutWidget">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>-1</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="btn_CamImageImport">
-        <property name="text">
-         <string>Import Camera Image</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QPlainTextEdit" name="txt_DMDSizeX"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_DMDSizeX">
-          <property name="text">
-           <string>DMD Size X</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPlainTextEdit" name="txt_DMDSizeY"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_DMDSizeY">
-          <property name="text">
-           <string>DMD Size Y</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QPlainTextEdit" name="txt_DMDCalibrationImageRatio"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_DMDCalibrationImageRatio">
-          <property name="text">
-           <string>Calibration Image Ratio</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QPushButton" name="btn_Calibrate">
-          <property name="text">
-           <string>Calibrate</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="cbox_CalibrateCheck">
-          <property name="text">
-           <string>Lock Calibration?</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="TestImages/PixmapTest.qrc">:/newPrefix/Vialux_DMD.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>10</y>
+      <width>421</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="spacing">
+      <number>-1</number>
+     </property>
+     <item row="7" column="0">
+      <widget class="QPushButton" name="btn_Calibrate">
+       <property name="text">
+        <string>Calibrate</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" colspan="2">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Calibration Adjustment</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QRadioButton" name="radioButton_BlackMask">
+       <property name="text">
+        <string>Black Mask</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QRadioButton" name="radioButton_WhiteMask">
+       <property name="text">
+        <string>White Mask</string>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QPlainTextEdit" name="txt_DMDCalibrationImageRatio">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1</string>
+       </property>
+       <property name="placeholderText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QPlainTextEdit" name="txt_RotationAdjust">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QLabel" name="label_CentreAdjustX">
+       <property name="text">
+        <string>Centre Adjust X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QPlainTextEdit" name="txt_HeightAdjust">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="label_DMDSizeX">
+       <property name="text">
+        <string>DMD Size X</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QLabel" name="label_WidthAdjust">
+       <property name="text">
+        <string>Width Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPlainTextEdit" name="txt_DMDSizeY">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1080</string>
+       </property>
+       <property name="placeholderText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="label_DMDParameters">
+       <property name="text">
+        <string>DMD Parameters</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPlainTextEdit" name="txt_DMDSizeX">
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+       </property>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1920</string>
+       </property>
+       <property name="placeholderText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QPlainTextEdit" name="txt_WidthAdjust">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QLabel" name="label_CentreAdjustY">
+       <property name="text">
+        <string>Centre Adjust Y</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QLabel" name="label_RotationAdjust">
+       <property name="text">
+        <string>Rotation Adjust (clockwise)</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPlainTextEdit" name="txt_CentreAdjustX">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QLabel" name="label_HeightAdjust">
+       <property name="text">
+        <string>Height Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="label_DMDCalibrationImageRatio">
+       <property name="text">
+        <string>Calibration Image Ratio</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QPlainTextEdit" name="txt_CentreAdjustY">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="label_DMDSizeY">
+       <property name="text">
+        <string>DMD Size Y</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0" colspan="2">
+      <widget class="QPushButton" name="btn_CamImageImport">
+       <property name="text">
+        <string>Import Camera Image</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QPushButton" name="btn_SaveCalibration">
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2" colspan="2">
+      <widget class="QCheckBox" name="cbox_LockCalibration">
+       <property name="text">
+        <string>Lock Calibration?</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="view_DMDMaskImage">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>320</y>
+      <width>480</width>
+      <height>270</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="TestImages/PixmapTest.qrc">:/newPrefix2/UoL_logo.jpeg</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>551</x>
+      <y>530</y>
+      <width>331</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="2" colspan="2">
+      <widget class="QPushButton" name="btn_DMDMaskSave">
+       <property name="text">
+        <string>Save Current Mask</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QPushButton" name="btn_DMDMaskGen">
+       <property name="text">
+        <string>Generate DMD Mask</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -423,7 +615,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>780</width>
+     <width>914</width>
      <height>22</height>
     </rect>
    </property>
@@ -432,7 +624,8 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad_Calibration"/>
-    <addaction name="actionSave_Calibration"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -447,7 +640,14 @@
     <string>Save Calibration</string>
    </property>
   </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="TestImages/PixmapTest.qrc"/>
+ </resources>
  <connections/>
 </ui>
