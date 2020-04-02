@@ -30,6 +30,8 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_Calibrate.clicked.connect(self.onClick_Calibrate)
         self.ui.btn_SaveCalibration.clicked.connect(self.onClick_SaveCalibration)
         self.ui.cbox_LockCalibration.clicked.connect(self.onClick_LockCalibration)
+        self.ui.btn_DMDMaskGen.clicked.connect(self.onClick_DMDMaskGen)
+        self.ui.btn_DMDMaskSave.clicked.connect(self.onClick_DMDMaskSave)
         self.showImageInView("./TestImages/Vialux_DMD.png", self.ui.view_CameraImage)
         self.showImageInView("./TestImages/UoL_logo.jpeg", self.ui.view_DMDMaskImage)
         self.CalibrationValuesFile = 'CalibrationValues.txt'
@@ -53,6 +55,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.calibrationImageStorage = self.fileNameCameraImage
             imageFile.close()
             self.onClick_Calibrate()
+        self.MaskGeneratedFlag = False
             
 
     def showImageInView(self, image, view):
@@ -96,6 +99,22 @@ class appMainWindow(QtWidgets.QMainWindow):
         box = np.array([[Fx, Fy], [Ex, Ey], [Bx, By], [Cx, Cy]])
         return box
 
+    def maskGenerationCalibration(self):
+        print('Calibration')
+        return
+
+    def maskGenerationThreshold(self):
+        print('Threshold')
+        return
+        
+    def maskGenerationSlit(self):
+        print('Slit')
+        return
+
+    def maskGenerationPinhole(self):
+        print('Pinhole')
+        return
+    
     @pyqtSlot()
     def onClick_CamImageImport(self):
         options = QtWidgets.QFileDialog.Options()
@@ -199,6 +218,25 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.ui.btn_Calibrate.setEnabled(True)
         self.repaint()
 
+    @pyqtSlot()
+    def onClick_DMDMaskGen(self):
+        if self.ui.tab_MaskFunctionality.currentIndex() == 0:
+            self.maskGenerationCalibration()
+        elif self.ui.tab_MaskFunctionality.currentIndex() == 1:
+            self.maskGenerationThreshold()
+        elif self.ui.tab_MaskFunctionality.currentIndex() == 2:
+            self.maskGenerationSlit()
+        elif self.ui.tab_MaskFunctionality.currentIndex() == 3:
+            self.maskGenerationPinhole()
+        self.MaskGeneratedFlag = True
+
+    @pyqtSlot()
+    def onClick_DMDMaskSave(self):
+        if not(self.MaskGeneratedFlag):
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('Mask must be generated before it can be saved.')
+            error_dialog.exec_()
+            return
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
