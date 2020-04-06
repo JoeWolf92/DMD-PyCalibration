@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 class ShapeDetector:
-    def __init__(self, filename, shapeColour):
+    def __init__(self, filename, shapeColour, calibrationThreshold):
         # Initiate image containing shapes to be identified
         if shapeColour:
             self.shapeColour = 1
@@ -11,11 +11,12 @@ class ShapeDetector:
             self.shapeColour = 0
         self.sourceImage = cv2.imread(filename,cv2.IMREAD_GRAYSCALE)
         self.colourImage = cv2.cvtColor(self.sourceImage,cv2.COLOR_RGB2BGR)
+        self.thresholdCalibrationValue = calibrationThreshold
         if self.shapeColour == 1:
             thresholdImageInitial = cv2.bitwise_not(self.sourceImage)
-            _, self.thresholdImage = cv2.threshold(thresholdImageInitial, 200, 255, cv2.THRESH_BINARY)
+            _, self.thresholdImage = cv2.threshold(thresholdImageInitial, self.thresholdCalibrationValue, 255, cv2.THRESH_BINARY)
         else:
-            _, thresholdImageInitial = cv2.threshold(self.sourceImage, 200, 255, cv2.THRESH_BINARY)
+            _, thresholdImageInitial = cv2.threshold(self.sourceImage, self.thresholdCalibrationValue, 255, cv2.THRESH_BINARY)
             self.thresholdImage = thresholdImageInitial
         openKernel = cv2.getStructuringElement(cv2.MORPH_RECT,(10,10))
         self.filteredImage = cv2.morphologyEx(self.thresholdImage, cv2.MORPH_OPEN, openKernel)
