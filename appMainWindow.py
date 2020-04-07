@@ -41,6 +41,8 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_DMDMaskSave.clicked.connect(self.onClick_DMDMaskSave)
         self.ui.btn_getThresholdValues.clicked.connect(self.onClick_GetThresholdValues)
         self.ui.btn_MaskToAdd.clicked.connect(self.onClick_MaskToAddImport)
+        self.ui.btn_FlipLR.clicked.connect(self.onClick_FlipMaskLR)
+        self.ui.btn_FlipUD.clicked.connect(self.onClick_FlipMaskUD)
         self.ui.slider_thresholdValue.valueChanged.connect(self.valueChange_ThresholdValue)
         self.showImageInView("./TestImages/Vialux_DMD.png", self.ui.view_CameraImage)
         self.showImageInView("./TestImages/UoL_logo.jpeg", self.ui.view_DMDMaskImage)
@@ -168,11 +170,24 @@ class appMainWindow(QtWidgets.QMainWindow):
         DMDImageWidth = round(self.calibration.width / float(self.ui.txt_DMDCalibrationImageRatio.toPlainText()))
         DMDImageHeight = round(self.calibration.height / float(self.ui.txt_DMDCalibrationImageRatio.toPlainText()))
         imageSizeX, imageSizeY = rotatedImage.shape
-        DMDStartX = int(round((imageSizeX-DMDImageWidth)/2))
-        DMDEndX = int(DMDStartX + DMDImageWidth)
-        DMDStartY = int(round((imageSizeY-DMDImageHeight)/2))
-        DMDEndY = int(DMDStartY + DMDImageHeight)
-        newImage = rotatedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
+        if DMDImageWidth > imageSizeX:
+            DMDStartX = 0
+            DMDEndX = int(DMDImageWidth)
+            padX = int(round(np.abs(imageSizeX-DMDImageWidth) / 2))
+        else:
+            DMDStartX = int(round((imageSizeX-DMDImageWidth) / 2))
+            DMDEndX = int(DMDStartX + DMDImageWidth)
+            padX = 0
+        if DMDImageHeight > imageSizeY:
+            DMDStartY = 0
+            DMDEndY = int(DMDImageHeight)
+            padY = int(round(np.abs(imageSizeY-DMDImageHeight) / 2))
+        else:
+            DMDStartY = int(round((imageSizeY-DMDImageHeight) / 2))
+            DMDEndY = int(DMDStartY + DMDImageHeight)
+            padY = 0
+        paddedImage = np.pad(rotatedImage, ((padY, padY), (padX, padX)), 'constant')
+        newImage = paddedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
         newImageScaledX = np.arange(0, 1920, 1, dtype = np.uint8)
         newImageScaledY = np.arange(0, 1080, 1, dtype = np.uint8)
         self.newImageScaled = cv2.resize(newImage, dsize=(DMDSizeX, DMDSizeY), interpolation=cv2.INTER_CUBIC)
@@ -214,6 +229,28 @@ class appMainWindow(QtWidgets.QMainWindow):
     def maskGenerationPinhole(self, blackBool):
         print('Pinhole')
         self.MaskGeneratedFlag = True
+        return
+
+    @pyqtSlot()
+    def onClick_FlipMaskLR(self):
+        self.Mask = np.fliplr(self.Mask)
+        height1D, width1D = self.Mask.shape
+        rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
+        rgbImage[:,:,0] = self.Mask
+        rgbImage[:,:,1] = self.Mask
+        rgbImage[:,:,2] = self.Mask
+        self.showImageInView(rgbImage, self.ui.view_DMDMaskImage)
+        return
+
+    @pyqtSlot()
+    def onClick_FlipMaskUD(self):
+        self.Mask = np.flipud(self.Mask)
+        height1D, width1D = self.Mask.shape
+        rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
+        rgbImage[:,:,0] = self.Mask
+        rgbImage[:,:,1] = self.Mask
+        rgbImage[:,:,2] = self.Mask
+        self.showImageInView(rgbImage, self.ui.view_DMDMaskImage)
         return
 
     @pyqtSlot()

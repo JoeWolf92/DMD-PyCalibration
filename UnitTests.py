@@ -65,11 +65,12 @@ class appMainWindowTests(unittest.TestCase):
     #     cv2.destroyAllWindows()
 
     def test_ThresholdImage(self):
-        image = plt.imread('./TestImages/WhiteRectangle.tiff')
+        # image = plt.imread('./TestImages/WhiteRectangle.tiff')
+        image = plt.imread('/Users/joewolf/Downloads/CalibrationImage_Exposure-500ms_Ratio-0p1.tif')
         plt.imshow(image)
         plt.show()
-        centreYImage = 564
-        centreXImage = 1144
+        centreYImage = 581
+        centreXImage = 973
         DMDSizeY = 1080
         DMDSizeX = 1920
         centreYDMD = DMDSizeY/2
@@ -79,19 +80,37 @@ class appMainWindowTests(unittest.TestCase):
         shiftImage = scipy.ndimage.shift(image, np.array([shiftY, shiftX]))
         plt.imshow(shiftImage)
         plt.show()
-        rotatedImage = rotate(shiftImage , angle = -45)
+        rotatedImage = rotate(shiftImage , angle = -42.83)
         plt.imshow(rotatedImage)
         plt.show()
-        calibrationRatio = 0.5
-        DMDImageWidth = 834 / calibrationRatio
-        DMDImageHeight = 487 / calibrationRatio
-        imageSizeX, imageSizeY = rotatedImage.shape
-        DMDStartX = int(round((imageSizeX-DMDImageWidth)/2))
-        DMDEndX = int(DMDStartX + DMDImageWidth)
-        DMDStartY = int(round((imageSizeY-DMDImageHeight)/2))
-        DMDEndY = int(DMDStartY + DMDImageHeight)
-        newImage = rotatedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
+        calibrationRatio = 0.1
+        DMDImageWidth = 296 / calibrationRatio
+        DMDImageHeight = 165 / calibrationRatio
+        imageSizeY, imageSizeX = rotatedImage.shape
+        if DMDImageWidth > imageSizeX:
+            DMDStartX = 0
+            DMDEndX = int(DMDImageWidth)
+            padX = int(round(np.abs(imageSizeX-DMDImageWidth) / 2))
+        else:
+            DMDStartX = int(round((imageSizeX-DMDImageWidth) / 2))
+            DMDEndX = int(DMDStartX + DMDImageWidth)
+            padX = 0
+        if DMDImageHeight > imageSizeY:
+            DMDStartY = 0
+            DMDEndY = int(DMDImageHeight)
+            padY = int(round(np.abs(imageSizeY-DMDImageHeight) / 2))
+        else:
+            DMDStartY = int(round((imageSizeY-DMDImageHeight) / 2))
+            DMDEndY = int(DMDStartY + DMDImageHeight)
+            padY = 0
+        paddedImage = np.pad(rotatedImage, ((padY, padY), (padX, padX)), 'constant')
+        newImage = paddedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
         plt.imshow(newImage)
+        plt.show()
+        newImageScaledX = np.arange(0, 1920, 1, dtype = np.uint8)
+        newImageScaledY = np.arange(0, 1080, 1, dtype = np.uint8)
+        newImageScaled = cv2.resize(newImage, dsize=(DMDSizeX, DMDSizeY), interpolation=cv2.INTER_CUBIC)
+        plt.imshow(newImageScaled)
         plt.show()
 
     # def test_CalibrationImageLoad(self):

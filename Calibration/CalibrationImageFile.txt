@@ -1,1 +1,1 @@
-/Users/joewolf/Desktop/DMD-PyCalibration/TestImages/WhiteRectangle.tiff
+/Users/joewolf/Downloads/CalibrationImage_Exposure-500ms_Ratio-0p1.tif
