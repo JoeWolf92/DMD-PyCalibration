@@ -416,6 +416,9 @@ class appMainWindow(QtWidgets.QMainWindow):
             return
         else:
             self.MaskChoice = self.ui.tab_MaskFunctionality.currentIndex()
+            self.Mask = rotate(self.Mask , angle = int(float(self.ui.txt_maskAdjustRot.toPlainText())))
+            self.Mask = np.roll(self.Mask, int(float(self.ui.txt_maskAdjustUD.toPlainText())), axis = 0)
+            self.Mask = np.roll(self.Mask, int(float(self.ui.txt_maskAdjustLR.toPlainText())), axis = 1)
             height1D, width1D = self.Mask.shape
             rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
             rgbImage[:,:,0] = self.Mask
