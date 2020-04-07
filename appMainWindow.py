@@ -41,8 +41,6 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_DMDMaskSave.clicked.connect(self.onClick_DMDMaskSave)
         self.ui.btn_getThresholdValues.clicked.connect(self.onClick_GetThresholdValues)
         self.ui.btn_MaskToAdd.clicked.connect(self.onClick_MaskToAddImport)
-        self.ui.btn_FlipLR.clicked.connect(self.onClick_FlipMaskLR)
-        self.ui.btn_FlipUD.clicked.connect(self.onClick_FlipMaskUD)
         self.ui.slider_thresholdValue.valueChanged.connect(self.valueChange_ThresholdValue)
         self.showImageInView("./TestImages/Vialux_DMD.png", self.ui.view_CameraImage)
         self.showImageInView("./TestImages/UoL_logo.jpeg", self.ui.view_DMDMaskImage)
@@ -190,11 +188,18 @@ class appMainWindow(QtWidgets.QMainWindow):
         newImage = paddedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
         newImageScaledX = np.arange(0, 1920, 1, dtype = np.uint8)
         newImageScaledY = np.arange(0, 1080, 1, dtype = np.uint8)
-        self.newImageScaled = cv2.resize(newImage, dsize=(DMDSizeX, DMDSizeY), interpolation=cv2.INTER_CUBIC)
+        localMask = cv2.resize(newImage, dsize=(DMDSizeX, DMDSizeY), interpolation=cv2.INTER_CUBIC)
+        if self.ui.cBox_FlipLR.isChecked():
+            localMask = np.fliplr(localMask)
+        if self.ui.cBox_FlipUD.isChecked():
+            localMask = np.flipud(localMask)
+        localMask = rotate(localMask, angle = int(float(self.ui.txt_maskAdjustRot.toPlainText())))
+        localMask = np.roll(localMask, int(float(self.ui.txt_maskAdjustUD.toPlainText())), axis = 0)
+        localMask = np.roll(localMask, int(float(self.ui.txt_maskAdjustLR.toPlainText())), axis = 1)
         if not(blackBool):
-            localMask = cv2.threshold(self.newImageScaled, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
+            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
         else:
-            localMask = cv2.threshold(self.newImageScaled, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
+            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
         if not(self.ui.txt_MaskToAdd.toPlainText() == ''):
             try:
                 localMaskToAdd = plt.imread(self.ui.txt_MaskToAdd.toPlainText())
@@ -202,9 +207,9 @@ class appMainWindow(QtWidgets.QMainWindow):
                 if localMask[1].shape == localMaskToAdd.shape:
                     localMaskAdded = localMask[1] + localMaskToAdd
                     if not(blackBool):
-                        localMaskTuple = cv2.threshold(localMaskAdded, 255, 255, cv2.THRESH_BINARY)
+                        localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY)
                     else:
-                        localMaskTuple = cv2.threshold(localMaskAdded, 255, 255, cv2.THRESH_BINARY_INV)
+                        localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY_INV)
                     localMask = localMaskTuple[1]
                 else:
                     error_dialog = QtWidgets.QErrorMessage()
@@ -229,28 +234,6 @@ class appMainWindow(QtWidgets.QMainWindow):
     def maskGenerationPinhole(self, blackBool):
         print('Pinhole')
         self.MaskGeneratedFlag = True
-        return
-
-    @pyqtSlot()
-    def onClick_FlipMaskLR(self):
-        self.Mask = np.fliplr(self.Mask)
-        height1D, width1D = self.Mask.shape
-        rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
-        rgbImage[:,:,0] = self.Mask
-        rgbImage[:,:,1] = self.Mask
-        rgbImage[:,:,2] = self.Mask
-        self.showImageInView(rgbImage, self.ui.view_DMDMaskImage)
-        return
-
-    @pyqtSlot()
-    def onClick_FlipMaskUD(self):
-        self.Mask = np.flipud(self.Mask)
-        height1D, width1D = self.Mask.shape
-        rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
-        rgbImage[:,:,0] = self.Mask
-        rgbImage[:,:,1] = self.Mask
-        rgbImage[:,:,2] = self.Mask
-        self.showImageInView(rgbImage, self.ui.view_DMDMaskImage)
         return
 
     @pyqtSlot()
@@ -416,9 +399,6 @@ class appMainWindow(QtWidgets.QMainWindow):
             return
         else:
             self.MaskChoice = self.ui.tab_MaskFunctionality.currentIndex()
-            self.Mask = rotate(self.Mask , angle = int(float(self.ui.txt_maskAdjustRot.toPlainText())))
-            self.Mask = np.roll(self.Mask, int(float(self.ui.txt_maskAdjustUD.toPlainText())), axis = 0)
-            self.Mask = np.roll(self.Mask, int(float(self.ui.txt_maskAdjustLR.toPlainText())), axis = 1)
             height1D, width1D = self.Mask.shape
             rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
             rgbImage[:,:,0] = self.Mask

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>941</width>
-    <height>758</height>
+    <height>722</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -122,7 +122,7 @@
        <rect>
         <x>0</x>
         <y>10</y>
-        <width>381</width>
+        <width>391</width>
         <height>261</height>
        </rect>
       </property>
@@ -163,6 +163,13 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_maskAdjustLR">
+         <property name="text">
+          <string>L/R Adjust</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="0">
         <widget class="QPlainTextEdit" name="txt_maskAdjustLR">
          <property name="minimumSize">
@@ -182,6 +189,13 @@
          </property>
          <property name="plainText">
           <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_maskAdjustUD">
+         <property name="text">
+          <string>U/D Adjust</string>
          </property>
         </widget>
        </item>
@@ -259,10 +273,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_lowValueThreshold">
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_maskAdjustRot">
          <property name="text">
-          <string>0</string>
+          <string>Rot Adjust</string>
          </property>
         </widget>
        </item>
@@ -288,24 +302,27 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_maskAdjustLR">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_lowValueThreshold">
          <property name="text">
-          <string>L/R Adjust</string>
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QLabel" name="label_maskAdjustUD">
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="cBox_FlipLR">
          <property name="text">
-          <string>U/D Adjust</string>
+          <string>Flip L/R</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="label_maskAdjustRot">
+       <item row="4" column="3">
+        <widget class="QCheckBox" name="cBox_FlipUD">
          <property name="text">
-          <string>Rot Adjust</string>
+          <string>Flip U/D</string>
          </property>
         </widget>
        </item>
@@ -1022,7 +1039,7 @@
       <x>531</x>
       <y>640</y>
       <width>391</width>
-      <height>92</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
@@ -1060,20 +1077,6 @@
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="btn_FlipLR">
-       <property name="text">
-        <string>Flip L/R</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="btn_FlipUD">
-       <property name="text">
-        <string>Flip U/D</string>
        </property>
       </widget>
      </item>
