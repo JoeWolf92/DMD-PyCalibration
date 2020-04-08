@@ -23,6 +23,7 @@ import scipy.ndimage
 import scipy.interpolate as interp
 from PIL import Image as PILImage
 from math import sqrt
+import ntpath
 
 class appMainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -419,7 +420,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.maskCountCalibration = self.maskCountCalibration + 1
         elif self.MaskChoice == 1:
             saveMask = self.Mask.astype(np.uint8)
-            imwrite('./Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '_Threshold-' + self.ui.txt_currentThreshold.toPlainText() + '_MaskAdded-' + self.ui.txt_MaskToAdd.toPlainText() + '.bmp', saveMask)
+            imwrite('./Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '_Threshold-' + self.ui.txt_currentThreshold.toPlainText() + '_MaskAdded-' + ntpath.basename(self.ui.txt_MaskToAdd.toPlainText()) + '.bmp', saveMask)
             self.maskCountThreshold = self.maskCountThreshold + 1
         elif self.MaskChoice == 2:
             imwrite('./Masks/Slit/SlitMask-' + str(self.maskCountSlit) + '_NumSlits-' + str(self.ui.spinBox_NumberOfSlits.value()) + '_Width-' + self.ui.txt_SlitWidth.toPlainText() + '_Separation-' + self.ui.txt_SlitSeparation.toPlainText() + '_Rotation' + self.ui.txt_SlitRotation.toPlainText() + '.bmp', self.Mask)
