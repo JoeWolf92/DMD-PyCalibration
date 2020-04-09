@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
-    <height>722</height>
+    <width>934</width>
+    <height>793</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,9 +27,9 @@
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>330</y>
+      <y>360</y>
       <width>391</width>
-      <height>311</height>
+      <height>351</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -123,7 +123,7 @@
         <x>0</x>
         <y>10</y>
         <width>391</width>
-        <height>261</height>
+        <height>316</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
@@ -149,6 +149,13 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="3">
+        <widget class="QCheckBox" name="cBox_FlipUD">
+         <property name="text">
+          <string>Flip U/D</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="2" colspan="2">
         <widget class="QPushButton" name="btn_MaskToAdd">
          <property name="text">
@@ -160,6 +167,23 @@
         <widget class="QPushButton" name="btn_getThresholdValues">
          <property name="text">
           <string>Get Threshold Values</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="cBox_FlipLR">
+         <property name="text">
+          <string>Flip L/R</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_lowValueThreshold">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -302,27 +326,32 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_lowValueThreshold">
-         <property name="text">
+       <item row="5" column="0">
+        <widget class="QPlainTextEdit" name="txt_ThresholdFilterSize">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>90</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
           <string>0</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QCheckBox" name="cBox_FlipLR">
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_ThresholdFilterAmount">
          <property name="text">
-          <string>Flip L/R</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QCheckBox" name="cBox_FlipUD">
-         <property name="text">
-          <string>Flip U/D</string>
+          <string>Filter Size</string>
          </property>
         </widget>
        </item>
@@ -600,7 +629,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>290</y>
+      <y>340</y>
       <width>901</width>
       <height>31</height>
      </rect>
@@ -613,7 +642,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>30</y>
       <width>480</width>
       <height>270</height>
      </rect>
@@ -638,23 +667,23 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>0</y>
+      <y>10</y>
       <width>425</width>
-      <height>294</height>
+      <height>331</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <property name="spacing">
       <number>-1</number>
      </property>
-     <item row="7" column="0" colspan="2">
+     <item row="8" column="0" colspan="2">
       <widget class="QPushButton" name="btn_CamImageImport">
        <property name="text">
         <string>Import Camera Image</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="2" colspan="2">
+     <item row="8" column="2" colspan="2">
       <widget class="QCheckBox" name="cbox_LockCalibration">
        <property name="text">
         <string>Lock Calibration?</string>
@@ -697,16 +726,6 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="3">
-      <widget class="QLabel" name="label_CalibrationThreshold">
-       <property name="text">
-        <string>Calibration Threshold</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2" colspan="2">
       <widget class="QLabel" name="label_CalibrationParameters">
        <property name="text">
@@ -714,34 +733,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QPlainTextEdit" name="txt_CalibrationThreshold">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>90</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="tabChangesFocus">
-        <bool>true</bool>
-       </property>
-       <property name="plainText">
-        <string>200</string>
        </property>
       </widget>
      </item>
@@ -1006,13 +997,80 @@
        </property>
       </widget>
      </item>
+     <item row="6" column="2">
+      <widget class="QPlainTextEdit" name="plainTextEdit">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QPlainTextEdit" name="txt_CalibrationThreshold">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>200</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QLabel" name="label_SkewAdjust">
+       <property name="text">
+        <string>Skew Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QLabel" name="label_CalibrationThreshold">
+       <property name="text">
+        <string>Calibration Threshold</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QLabel" name="view_DMDMaskImage">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>320</y>
+      <y>400</y>
       <width>480</width>
       <height>270</height>
      </rect>
@@ -1037,7 +1095,7 @@
     <property name="geometry">
      <rect>
       <x>531</x>
-      <y>640</y>
+      <y>710</y>
       <width>391</width>
       <height>51</height>
      </rect>
@@ -1088,7 +1146,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>941</width>
+     <width>934</width>
      <height>22</height>
     </rect>
    </property>

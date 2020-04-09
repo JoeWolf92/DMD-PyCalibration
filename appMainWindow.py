@@ -11,10 +11,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
 from UI_appMainWindow import Ui_MainWindow
-
 import ShapeRecognition as sr
 import cv2
 import numpy as np
+
 import os.path
 from imageio import imwrite
 import matplotlib.pyplot as plt
@@ -24,9 +24,13 @@ import scipy.interpolate as interp
 from PIL import Image as PILImage
 from math import sqrt
 import ntpath
+from scipy.ndimage.morphology import binary_opening
+#import libtiff
 
 class appMainWindow(QtWidgets.QMainWindow):
     def __init__(self):
+        #libtiff.libtiff_ctypes.suppress_warnings()
+        #libtiff.TIFFSetWarningHandler(_null_warning_handler)
         super(appMainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -224,6 +228,9 @@ class appMainWindow(QtWidgets.QMainWindow):
                 return
         else:
             localMask = localMask[1]
+        thresholdFilterSize = int(float(self.ui.txt_ThresholdFilterSize.toPlainText()))
+        if thresholdFilterSize > 0:
+            localMask = binary_opening(localMask, structure=np.ones((thresholdFilterSize, thresholdFilterSize))).astype(np.uint8) * 255
         self.MaskGeneratedFlag = True
         return localMask
         
