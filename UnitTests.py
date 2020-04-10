@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt, QtTest
 import cv2
 
 import appMainWindow
-import ShapeRecognition
+import ShapeRecognitionV2 as ShapeRecognition
 import matplotlib.pyplot as plt
 from scipy.ndimage.interpolation import rotate
 import scipy.ndimage

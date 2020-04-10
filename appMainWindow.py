@@ -231,6 +231,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         thresholdFilterSize = int(float(self.ui.txt_ThresholdFilterSize.toPlainText()))
         if thresholdFilterSize > 0:
             localMask = binary_opening(localMask, structure=np.ones((thresholdFilterSize, thresholdFilterSize))).astype(np.uint8) * 255
+            localMask = cv2.bitwise_not(binary_opening(cv2.bitwise_not(localMask), structure=np.ones((thresholdFilterSize, thresholdFilterSize))).astype(np.uint8) * 255)
         self.MaskGeneratedFlag = True
         return localMask
         
