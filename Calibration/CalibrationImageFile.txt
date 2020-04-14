@@ -1,1 +1,1 @@
-/Users/joewolf/Downloads/CalibrationImage_Exposure-500ms_Ratio-0p25.tif
+/Users/joewolf/Desktop/DMD-PyCalibration/TestImages/CalibrationImage.tif

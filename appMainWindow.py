@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
 from UI_appMainWindow import Ui_MainWindow
-import ShapeRecognition as sr
+import ShapeRecognitionV2 as sr
 import cv2
 import numpy as np
 
@@ -25,6 +25,7 @@ from PIL import Image as PILImage
 from math import sqrt
 import ntpath
 from scipy.ndimage.morphology import binary_opening
+import skimage.exposure as exposure
 #import libtiff
 
 class appMainWindow(QtWidgets.QMainWindow):
@@ -46,6 +47,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_DMDMaskSave.clicked.connect(self.onClick_DMDMaskSave)
         self.ui.btn_getThresholdValues.clicked.connect(self.onClick_GetThresholdValues)
         self.ui.btn_MaskToAdd.clicked.connect(self.onClick_MaskToAddImport)
+        self.ui.btn_SendCalParameters.clicked.connect(self.onClick_SendCalParameters)
         self.ui.slider_thresholdValue.valueChanged.connect(self.valueChange_ThresholdValue)
         self.showImageInView("./TestImages/Vialux_DMD.png", self.ui.view_CameraImage)
         self.showImageInView("./TestImages/UoL_logo.jpeg", self.ui.view_DMDMaskImage)
@@ -59,17 +61,16 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.calibrationValuesStorage = np.loadtxt(self.CalibrationValuesFile, dtype=float)
             self.ui.txt_DMDSizeX.setPlainText(str(self.calibrationValuesStorage[0]))
             self.ui.txt_DMDSizeY.setPlainText(str(self.calibrationValuesStorage[1]))
-            self.ui.txt_DMDCalibrationImageRatio.setPlainText(str(self.calibrationValuesStorage[2]))
-            if self.calibrationValuesStorage[3] == 1:
+            if self.calibrationValuesStorage[2] == 1:
                 self.ui.radioButton_BlackImageMask.setChecked(True)
             else:
                 self.ui.radioButton_WhiteImageMask.setChecked(True)
-            self.ui.txt_CentreAdjustX.setPlainText(str(self.calibrationValuesStorage[4]))
-            self.ui.txt_CentreAdjustY.setPlainText(str(self.calibrationValuesStorage[5]))
-            self.ui.txt_RotationAdjust.setPlainText(str(self.calibrationValuesStorage[6]))
-            self.ui.txt_WidthAdjust.setPlainText(str(self.calibrationValuesStorage[7]))
-            self.ui.txt_HeightAdjust.setPlainText(str(self.calibrationValuesStorage[8]))
-            self.ui.txt_CalibrationThreshold.setPlainText(str(self.calibrationValuesStorage[9]))
+            self.ui.txt_CalPositionX.setPlainText(str(self.calibrationValuesStorage[3]))
+            self.ui.txt_CalPositionY.setPlainText(str(self.calibrationValuesStorage[4]))
+            self.ui.txt_CalRotation.setPlainText(str(self.calibrationValuesStorage[5]))
+            self.ui.txt_CalWidth.setPlainText(str(self.calibrationValuesStorage[6]))
+            self.ui.txt_CalHeight.setPlainText(str(self.calibrationValuesStorage[7]))
+            self.ui.txt_CalibrationThreshold.setPlainText(str(self.calibrationValuesStorage[8]))
             imageFile = open(self.CalibrationImageFile,'r')
             self.fileNameCameraImage = imageFile.read()
             self.calibrationImageStorage = self.fileNameCameraImage
@@ -88,68 +89,43 @@ class appMainWindow(QtWidgets.QMainWindow):
         view.setPixmap(QtGui.QPixmap(imagePixMap))
         view.repaint()
         return
-    
-    def generateBox(self, calibration):
-        # Initialise local input values
-        centreX = calibration.positionX
-        centreY = calibration.positionY
-        theta = calibration.rotation
-        phi = 90 - theta
-        thetaRad = theta * np.pi / 180
-        phiRad = phi * np.pi / 180
-        semiW = calibration.width / 2
-        semiH = calibration.height / 2
-        # A is point to the right of centre half way up the right side of the rectangle
-        Ax = int(round(centreX + semiW * np.cos(thetaRad)))
-        Ay = int(round(centreY + semiW * np.sin(thetaRad)))
-        # B is the bottom right corner of the rectangle
-        Bx = int(round(Ax + semiH * np.sin(thetaRad)))
-        By = int(round(Ay - semiH * np.cos(thetaRad)))
-        # C is the top right corner of the rectangle
-        Cx = int(round(Ax - semiH * np.cos(phiRad)))
-        Cy = int(round(Ay + semiH * np.sin(phiRad)))
-        # D is point to the left of centre half way up the left side of the rectangle
-        Dx = int(round(centreX - semiW * np.cos(thetaRad)))
-        Dy = int(round(centreY - semiW * np.sin(thetaRad)))
-        # E is the bottom left corner of the rectangle
-        Ex = int(round(Dx + semiH * np.cos(phiRad)))
-        Ey = int(round(Dy - semiH * np.sin(phiRad)))
-        # F is the top left corner of the rectangle
-        Fx = int(round(Dx - semiH * np.sin(thetaRad)))
-        Fy = int(round(Dy + semiH * np.cos(thetaRad)))
-        box = np.array([[Fx, Fy], [Ex, Ey], [Bx, By], [Cx, Cy]])
-        return box
 
     def maskGenerationCalibration(self, blackBool):
         xSize = int(float(self.ui.txt_DMDSizeX.toPlainText()))
         ySize = int(float(self.ui.txt_DMDSizeY.toPlainText()))
-        ratio = float(self.ui.txt_DMDCalibrationMaskRatio.toPlainText())
-        xSizeRatio = round(ratio * xSize)
-        ySizeRatio = round(ratio * ySize)
-        centreX = round(xSize/2)
-        centreY = round(ySize/2)
-        calibrationSectionXSemiLow = centreX - round(xSizeRatio/2)
-        calibrationSectionYSemiLow = centreY - round(ySizeRatio/2)
-        calibrationSectionXSemiHigh = centreX + round(xSizeRatio/2)
-        calibrationSectionYSemiHigh = centreY + round(ySizeRatio/2)
+        maskCentreX = int(float(self.ui.txt_DMDCalibrationMaskPositionX.toPlainText()))
+        maskCentreY = int(float(self.ui.txt_DMDCalibrationMaskPositionY.toPlainText()))
+        maskHeight = int(float(self.ui.txt_DMDCalibrationMaskHeight.toPlainText()))
+        maskWidth = int(float(self.ui.txt_DMDCalibrationMaskWidth.toPlainText()))
+        maskRotation = float(self.ui.txt_DMDCalibrationMaskRotation.toPlainText())
         centreCircleRadius = float(self.ui.txt_CentreCircleSize.toPlainText())
         if blackBool:
-            localMask = np.zeros((ySize, xSize), dtype=np.uint8)
+            localMask = np.zeros((maskHeight, maskWidth), dtype=np.uint8)
         else:
-            localMask = np.ones((ySize, xSize), dtype=np.uint8) * 255
-        for x in range(xSize-1):
-            for y in range(ySize-1):
-                if x > calibrationSectionXSemiLow and x < calibrationSectionXSemiHigh and y > calibrationSectionYSemiLow and y < calibrationSectionYSemiHigh:
-                    if sqrt(((x - centreX) ** 2) + ((y - centreY) ** 2)) < centreCircleRadius:
-                        if blackBool:
-                            localMask[y, x] = 0
-                        else:
-                            localMask[y, x] = 255
+            localMask = np.ones((maskHeight, maskWidth), dtype=np.uint8) * 255
+        for x in range(maskWidth-1):
+            for y in range(maskHeight-1):
+                if sqrt(((x - (maskWidth/2)) ** 2) + ((y - (maskHeight/2)) ** 2)) < centreCircleRadius:
+                    if blackBool:
+                        localMask[y, x] = 255
                     else:
-                        if blackBool:
-                            localMask[y, x] = 255
-                        else:
-                            localMask[y, x] = 0
+                        localMask[y, x] = 0
+        shiftX = -maskCentreX
+        shiftY = -maskCentreY
+        if blackBool:
+            localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=255)
+            rotHeight, rotWidth = localMask.shape
+            padY = int((ySize - rotHeight) / 2)
+            padX = int((xSize - rotWidth) / 2)
+            localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (255, 255))
+            localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=255)
+        else:
+            localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=0)
+            rotHeight, rotWidth = localMask.shape
+            padY = int((ySize - rotHeight) / 2)
+            padX = int((xSize - rotWidth) / 2)
+            localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (0, 0))
+            localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=0)
         self.MaskGeneratedFlag = True
         return localMask
         
@@ -160,57 +136,70 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.exec_()
             return
         originalImage = plt.imread(self.fileNameCameraImage)
-        centreYImage = round(self.calibration.positionY)
-        centreXImage = round(self.calibration.positionX)
-        DMDSizeY = int(float(self.ui.txt_DMDSizeY.toPlainText()))
-        DMDSizeX = int(float(self.ui.txt_DMDSizeX.toPlainText()))
-        centreYDMD = DMDSizeY/2
-        centreXDMD = DMDSizeX/2
-        shiftX = -(centreXImage - centreXDMD)
-        shiftY = -(centreYImage - centreYDMD)
-        shiftImage = scipy.ndimage.shift(originalImage, np.array([shiftY, shiftX]))
-        rotatedImage = rotate(shiftImage , angle = self.calibration.rotation)
-        DMDImageWidth = round(self.calibration.width / float(self.ui.txt_DMDCalibrationImageRatio.toPlainText()))
-        DMDImageHeight = round(self.calibration.height / float(self.ui.txt_DMDCalibrationImageRatio.toPlainText()))
-        imageSizeX, imageSizeY = rotatedImage.shape
-        if DMDImageWidth > imageSizeX:
-            DMDStartX = 0
-            DMDEndX = int(DMDImageWidth)
-            padX = int(round(np.abs(imageSizeX-DMDImageWidth) / 2))
+        pts = self.cntrPoints.reshape(4,2)
+        rect = np.zeros((4,2), dtype='float32')
+        s = pts.sum(axis=1)
+        rect[0] = pts[np.argmin(s)] # tl
+        rect[2] = pts[np.argmax(s)] # br
+        diff = np.diff(pts, axis=1)
+        rect[1] = pts[np.argmin(abs(diff))] # tr
+        # rect[3] = pts[np.argmax(abs(diff))] # bl CURRENTLY DOES NOT WORK - NEEDS LONGTERM FIX
+        rect[3] = pts[np.argmin(pts[:,1])] # bl
+        (tl, tr, br, bl) = rect
+        # width of new image
+        widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+        widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+        # height of new image
+        heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+        heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+        # Max of A&B is are final dimensions
+        maxWidth = max(int(widthA), int(widthB))
+        maxHeight = max(int(heightA), int(heightB))
+        # Destination points which image will be mapped to
+        dst = np.array([
+            [0, 0],
+            [0, maxWidth - 1],
+            [maxHeight - 1, maxWidth - 1],
+            [maxHeight - 1, 0]], dtype = "float32")
+        # Calculate perspective transform matrix
+        M = cv2.getPerspectiveTransform(rect, dst)
+        # Warp perspective based on calculated transform
+        warpImage = cv2.warpPerspective(originalImage, M, (maxHeight, maxWidth))
+        # Scale warped section to actual size on DMD
+        warpImageScaled = cv2.resize(warpImage, dsize=(self.calibration.width, self.calibration.height), interpolation=cv2.INTER_LANCZOS4)
+        # Pad settings based on calibration mask parameters
+        DMDHalfHeight = self.calibration.DMDSizeY / 2
+        DMDHalfWidth = self.calibration.DMDSizeX / 2
+        offsetX = self.calibration.positionX
+        offsetY = self.calibration.positionY
+        maskHalfWidth = self.calibration.width / 2
+        maskHalfHeight = self.calibration.height / 2
+        padYTop = int(DMDHalfHeight - maskHalfHeight + offsetY)
+        padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
+        padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
+        padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)
+        # Rotate and pad scaled section of DMD mask to full DMD mask
+        if not(blackBool):
+            rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=0.0)
+            localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=0.0)
+            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
         else:
-            DMDStartX = int(round((imageSizeX-DMDImageWidth) / 2))
-            DMDEndX = int(DMDStartX + DMDImageWidth)
-            padX = 0
-        if DMDImageHeight > imageSizeY:
-            DMDStartY = 0
-            DMDEndY = int(DMDImageHeight)
-            padY = int(round(np.abs(imageSizeY-DMDImageHeight) / 2))
-        else:
-            DMDStartY = int(round((imageSizeY-DMDImageHeight) / 2))
-            DMDEndY = int(DMDStartY + DMDImageHeight)
-            padY = 0
-        paddedImage = np.pad(rotatedImage, ((padY, padY), (padX, padX)), 'constant')
-        newImage = paddedImage[DMDStartY:DMDEndY,DMDStartX:DMDEndX]
-        newImageScaledX = np.arange(0, 1920, 1, dtype = np.uint8)
-        newImageScaledY = np.arange(0, 1080, 1, dtype = np.uint8)
-        localMask = cv2.resize(newImage, dsize=(DMDSizeX, DMDSizeY), interpolation=cv2.INTER_CUBIC)
+            rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=255.0)        
+            localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=255.0)
+            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
+        localMask = localMask[1]
+        # Flip mask as required
         if self.ui.cBox_FlipLR.isChecked():
             localMask = np.fliplr(localMask)
         if self.ui.cBox_FlipUD.isChecked():
-            localMask = np.flipud(localMask)
-        localMask = rotate(localMask, angle = int(float(self.ui.txt_maskAdjustRot.toPlainText())))
-        localMask = np.roll(localMask, int(float(self.ui.txt_maskAdjustUD.toPlainText())), axis = 0)
-        localMask = np.roll(localMask, int(float(self.ui.txt_maskAdjustLR.toPlainText())), axis = 1)
-        if not(blackBool):
-            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
-        else:
-            localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
+            localMask = np.flipud(localMask)   
+        # Add to existing mask as required
         if not(self.ui.txt_MaskToAdd.toPlainText() == ''):
             try:
                 localMaskToAdd = plt.imread(self.ui.txt_MaskToAdd.toPlainText())
                 localMaskToAdd = localMaskToAdd.astype(dtype = np.uint8)
-                if localMask[1].shape == localMaskToAdd.shape:
-                    localMaskAdded = localMask[1] + localMaskToAdd
+                if localMask.shape == localMaskToAdd.shape:
+                    localMaskAdded = localMask + localMaskToAdd
                     if not(blackBool):
                         localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY)
                     else:
@@ -226,8 +215,6 @@ class appMainWindow(QtWidgets.QMainWindow):
                 error_dialog.showMessage('File to add to new Threshold Mask not found.')
                 error_dialog.exec_()
                 return
-        else:
-            localMask = localMask[1]
         thresholdFilterSize = int(float(self.ui.txt_ThresholdFilterSize.toPlainText()))
         if thresholdFilterSize > 0:
             localMask = binary_opening(localMask, structure=np.ones((thresholdFilterSize, thresholdFilterSize))).astype(np.uint8) * 255
@@ -248,6 +235,7 @@ class appMainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def valueChange_ThresholdValue(self):
         self.ui.txt_currentThreshold.setPlainText(str(self.ui.slider_thresholdValue.value()))
+        self.ui.txt_currentThreshold.repaint()
         return
     
     @pyqtSlot()
@@ -262,6 +250,22 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.slider_thresholdValue.setSliderPosition(minValue)
         self.ui.slider_thresholdValue.setMinimum(minValue)
         self.ui.slider_thresholdValue.setMaximum(maxValue)
+        self.repaint()
+        return
+    
+    @pyqtSlot()
+    def onClick_SendCalParameters(self):
+        if self.ui.cbox_LockCalibration.isChecked():
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('Unlock above calibration before transferring values.')
+            error_dialog.exec_()
+            return
+        self.ui.txt_CalPositionX.setPlainText(self.ui.txt_DMDCalibrationMaskPositionX.toPlainText())
+        self.ui.txt_CalPositionY.setPlainText(self.ui.txt_DMDCalibrationMaskPositionY.toPlainText())
+        self.ui.txt_CalRotation.setPlainText(self.ui.txt_DMDCalibrationMaskRotation.toPlainText())
+        self.ui.txt_CalWidth.setPlainText(self.ui.txt_DMDCalibrationMaskWidth.toPlainText())
+        self.ui.txt_CalHeight.setPlainText(self.ui.txt_DMDCalibrationMaskHeight.toPlainText())
+        self.repaint()
         return
 
     @pyqtSlot()
@@ -291,50 +295,53 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.showMessage('Calibration image must be loaded before calibration can be performed.')
             error_dialog.exec_()
             return
-        if not(self.ui.txt_DMDSizeX.toPlainText().replace(".", "", 1).isdigit()) or not(self.ui.txt_DMDSizeY.toPlainText().replace(".", "", 1).isdigit()) or not(self.ui.txt_DMDCalibrationImageRatio.toPlainText().replace(".", "", 1).isdigit()):
+        if not(self.ui.txt_DMDSizeX.toPlainText().replace(".", "", 1).isdigit()) or not(self.ui.txt_DMDSizeY.toPlainText().replace(".", "", 1).isdigit()):
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('DMD calibration ratio and DMD X & Y size must be numeric.')
             error_dialog.exec_()
             return
+        if self.ui.radioButton_BlackImageMask.isChecked():
+            checkState = 1
+        else:
+            checkState = 0
+        calValues = np.array([
+            float(self.ui.txt_DMDSizeX.toPlainText()),
+            float(self.ui.txt_DMDSizeY.toPlainText()), 
+            float(checkState),
+            float(self.ui.txt_CalPositionX.toPlainText()), 
+            float(self.ui.txt_CalPositionY.toPlainText()),
+            float(self.ui.txt_CalRotation.toPlainText()),
+            float(self.ui.txt_CalWidth.toPlainText()),
+            float(self.ui.txt_CalHeight.toPlainText()),
+            float(self.ui.txt_CalibrationThreshold.toPlainText())
+        ])
+        self.calibration = sr.ShapeDetector(self.fileNameCameraImage, calValues)
         try:
-            self.calibration = sr.ShapeDetector(self.fileNameCameraImage, self.ui.radioButton_BlackImageMask.isChecked(), int(float(self.ui.txt_CalibrationThreshold.toPlainText())))
+            self.cntrPoints = self.calibration.detectCalibration()
+            height1D, width1D = self.calibration.sourceImage.shape
+            rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
+            rgbImage[:,:,0] = self.calibration.sourceImage
+            rgbImage[:,:,1] = self.calibration.sourceImage
+            rgbImage[:,:,2] = self.calibration.sourceImage
+            cv2.drawContours(rgbImage, [self.cntrPoints], 0, (255, 0, 0), 5)
+            self.showImageInView(rgbImage, self.ui.view_CameraImage)
+            self.calibrationValuesStorage = np.array([
+                float(self.calibration.DMDSizeX),
+                float(self.calibration.DMDSizeY), 
+                float(self.calibration.shapeColour),
+                float(self.calibration.positionX),
+                float(self.calibration.positionY),
+                float(self.calibration.rotation),
+                float(self.calibration.width),
+                float(self.calibration.height),
+                float(self.calibration.thresholdCalibrationValue)
+                ], dtype=float)
+            self.calibrationImageStorage = self.fileNameCameraImage
         except:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('Problem with Calibration Threshold level set.')
             error_dialog.exec_()
             return
-        self.calibration.detectCalibration()
-        self.calibration.positionX = self.calibration.positionX + float(self.ui.txt_CentreAdjustX.toPlainText())
-        self.calibration.positionY = self.calibration.positionY + float(self.ui.txt_CentreAdjustY.toPlainText())
-        self.calibration.rotation = self.calibration.rotation + float(self.ui.txt_RotationAdjust.toPlainText())
-        self.calibration.width = self.calibration.width * float(self.ui.txt_WidthAdjust.toPlainText())
-        self.calibration.height = self.calibration.height * float(self.ui.txt_HeightAdjust.toPlainText())
-        box = self.generateBox(self.calibration)
-        cv2.drawContours(self.calibration.colourImage, [box], 0, (0, 255, 0), 3)
-        cv2.circle(self.calibration.colourImage,(round(self.calibration.positionX),round(self.calibration.positionY)), 10, (0,0,255), -1)
-        self.showImageInView(self.calibration.colourImage, self.ui.view_CameraImage)
-        if self.ui.radioButton_BlackImageMask.isChecked():
-            checkState = 1
-        else:
-            checkState = 0
-        self.calibrationValuesStorage = np.array([
-            float(self.ui.txt_DMDSizeX.toPlainText()),
-            float(self.ui.txt_DMDSizeY.toPlainText()), 
-            float(self.ui.txt_DMDCalibrationImageRatio.toPlainText()), 
-            float(checkState),
-            float(self.ui.txt_CentreAdjustX.toPlainText()), 
-            float(self.ui.txt_CentreAdjustY.toPlainText()),
-            float(self.ui.txt_RotationAdjust.toPlainText()),
-            float(self.ui.txt_WidthAdjust.toPlainText()),
-            float(self.ui.txt_HeightAdjust.toPlainText()),
-            float(self.calibration.thresholdCalibrationValue),
-            float(self.calibration.positionX),
-            float(self.calibration.positionY),
-            float(self.calibration.rotation),
-            float(self.calibration.width),
-            float(self.calibration.height)
-            ], dtype=float)
-        self.calibrationImageStorage = self.fileNameCameraImage
         return
 
     @pyqtSlot()
@@ -350,42 +357,39 @@ class appMainWindow(QtWidgets.QMainWindow):
         if self.ui.cbox_LockCalibration.isChecked():
             self.ui.txt_DMDSizeX.setEnabled(False)
             self.ui.txt_DMDSizeY.setEnabled(False)
-            self.ui.txt_DMDCalibrationImageRatio.setEnabled(False)
-            self.ui.txt_CentreAdjustX.setEnabled(False)
-            self.ui.txt_CentreAdjustY.setEnabled(False)
+            self.ui.txt_CalPositionX.setEnabled(False)
+            self.ui.txt_CalPositionY.setEnabled(False)
             self.ui.radioButton_BlackImageMask.setEnabled(False)
             self.ui.radioButton_WhiteImageMask.setEnabled(False)
-            self.ui.txt_RotationAdjust.setEnabled(False)
-            self.ui.txt_WidthAdjust.setEnabled(False)
-            self.ui.txt_HeightAdjust.setEnabled(False)
+            self.ui.txt_CalRotation.setEnabled(False)
+            self.ui.txt_CalWidth.setEnabled(False)
+            self.ui.txt_CalHeight.setEnabled(False)
             self.ui.btn_SaveCalibration.setEnabled(False)
             self.ui.btn_Calibrate.setEnabled(False)
             self.ui.txt_CalibrationThreshold.setEnabled(False)
         elif not(self.ui.cbox_LockCalibration.isChecked()):
             self.ui.txt_DMDSizeX.setEnabled(True)
             self.ui.txt_DMDSizeY.setEnabled(True)
-            self.ui.txt_DMDCalibrationImageRatio.setEnabled(True)
-            self.ui.txt_CentreAdjustX.setEnabled(True)
-            self.ui.txt_CentreAdjustY.setEnabled(True)
+            self.ui.txt_CalPositionX.setEnabled(True)
+            self.ui.txt_CalPositionY.setEnabled(True)
             self.ui.radioButton_BlackImageMask.setEnabled(True)
             self.ui.radioButton_WhiteImageMask.setEnabled(True)
-            self.ui.txt_RotationAdjust.setEnabled(True)
-            self.ui.txt_WidthAdjust.setEnabled(True)
-            self.ui.txt_HeightAdjust.setEnabled(True)
+            self.ui.txt_CalRotation.setEnabled(True)
+            self.ui.txt_CalWidth.setEnabled(True)
+            self.ui.txt_CalHeight.setEnabled(True)
             self.ui.btn_SaveCalibration.setEnabled(True)
             self.ui.btn_Calibrate.setEnabled(True)
             self.ui.txt_CalibrationThreshold.setEnabled(True)
         else:
             self.ui.txt_DMDSizeX.setEnabled(True)
             self.ui.txt_DMDSizeY.setEnabled(True)
-            self.ui.txt_DMDCalibrationImageRatio.setEnabled(True)
-            self.ui.txt_CentreAdjustX.setEnabled(True)
-            self.ui.txt_CentreAdjustY.setEnabled(True)
+            self.ui.txt_CalPositionX.setEnabled(True)
+            self.ui.txt_CalPositionY.setEnabled(True)
             self.ui.radioButton_BlackImageMask.setEnabled(True)
             self.ui.radioButton_WhiteImageMask.setEnabled(True)
-            self.ui.txt_RotationAdjust.setEnabled(True)
-            self.ui.txt_WidthAdjust.setEnabled(True)
-            self.ui.txt_HeightAdjust.setEnabled(True)
+            self.ui.txt_CalRotation.setEnabled(True)
+            self.ui.txt_CalWidth.setEnabled(True)
+            self.ui.txt_CalHeight.setEnabled(True)
             self.ui.btn_SaveCalibration.setEnabled(True)
             self.ui.btn_Calibrate.setEnabled(True)
             self.ui.txt_CalibrationThreshold.setEnabled(True)
