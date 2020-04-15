@@ -428,11 +428,11 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.exec_()
             return
         if self.MaskChoice == 0:
-            imwrite('./Masks/Calibration/CalibrationMask-' + str(self.maskCountCalibration) + '_CCSize-' + self.ui.txt_CentreCircleSize.toPlainText() + '_Ratio-' + self.ui.txt_DMDCalibrationMaskRatio.toPlainText() + '.bmp', self.Mask)
+            imwrite('./Masks/Calibration/CalibrationMask-' + str(self.maskCountCalibration) + '_CCSize-' + self.ui.txt_CentreCircleSize.toPlainText() + '.bmp', self.Mask)
             self.maskCountCalibration = self.maskCountCalibration + 1
         elif self.MaskChoice == 1:
             saveMask = self.Mask.astype(np.uint8)
-            imwrite('./Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '_Threshold-' + self.ui.txt_currentThreshold.toPlainText() + '_MaskAdded-' + ntpath.basename(self.ui.txt_MaskToAdd.toPlainText()) + '.bmp', saveMask)
+            imwrite('./Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '.bmp', saveMask)
             self.maskCountThreshold = self.maskCountThreshold + 1
         elif self.MaskChoice == 2:
             imwrite('./Masks/Slit/SlitMask-' + str(self.maskCountSlit) + '_NumSlits-' + str(self.ui.spinBox_NumberOfSlits.value()) + '_Width-' + self.ui.txt_SlitWidth.toPlainText() + '_Separation-' + self.ui.txt_SlitSeparation.toPlainText() + '_Rotation' + self.ui.txt_SlitRotation.toPlainText() + '.bmp', self.Mask)
