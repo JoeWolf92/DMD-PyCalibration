@@ -103,8 +103,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             localMask = np.zeros((maskHeight, maskWidth), dtype=np.uint8)
         else:
             localMask = np.ones((maskHeight, maskWidth), dtype=np.uint8) * 255
-        for x in range(maskWidth-1):
-            for y in range(maskHeight-1):
+        for x in range(maskWidth):
+            for y in range(maskHeight):
                 if sqrt(((x - (maskWidth/2)) ** 2) + ((y - (maskHeight/2)) ** 2)) < centreCircleRadius:
                     if blackBool:
                         localMask[y, x] = 255
@@ -115,9 +115,10 @@ class appMainWindow(QtWidgets.QMainWindow):
         if blackBool:
             localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=255)
             rotHeight, rotWidth = localMask.shape
-            padY = int((ySize - rotHeight) / 2)
-            padX = int((xSize - rotWidth) / 2)
+            padY = round((ySize - rotHeight) / 2)
+            padX = round((xSize - rotWidth) / 2)
             localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (255, 255))
+            localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
             localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=255)
         else:
             localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=0)
@@ -125,6 +126,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             padY = int((ySize - rotHeight) / 2)
             padX = int((xSize - rotWidth) / 2)
             localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (0, 0))
+            localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
             localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=0)
         self.MaskGeneratedFlag = True
         return localMask
