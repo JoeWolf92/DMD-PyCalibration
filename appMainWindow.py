@@ -118,6 +118,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             padY = round((ySize - rotHeight) / 2)
             padX = round((xSize - rotWidth) / 2)
             localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (255, 255))
+            if localMask.shape[0] < 1080 or localMask.shape[1] < 1920:
+                localMask = np.pad(localMask, ((0, 1), (0, 1)), 'constant', constant_values = (255, 255))
             localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
             localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=255)
         else:
@@ -126,6 +128,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             padY = int((ySize - rotHeight) / 2)
             padX = int((xSize - rotWidth) / 2)
             localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (0, 0))
+            if localMask.shape[0] < 1080 or localMask.shape[1] < 1920:
+                localMask = np.pad(localMask, ((0, 1), (0, 1)), 'constant', constant_values = (255, 255))
             localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
             localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=0)
         self.MaskGeneratedFlag = True
