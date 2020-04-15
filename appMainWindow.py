@@ -148,9 +148,8 @@ class appMainWindow(QtWidgets.QMainWindow):
         rect[0] = pts[np.argmin(s)] # tl
         rect[2] = pts[np.argmax(s)] # br
         diff = np.diff(pts, axis=1)
-        rect[1] = pts[np.argmin(abs(diff))] # tr
-        # rect[3] = pts[np.argmax(abs(diff))] # bl CURRENTLY DOES NOT WORK - NEEDS LONGTERM FIX
-        rect[3] = pts[np.argmin(pts[:,1])] # bl
+        rect[3] = pts[np.argmin(diff)] # tr
+        rect[1] = pts[np.argmax(diff)] # bl
         (tl, tr, br, bl) = rect
         # width of new image
         widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
@@ -178,19 +177,25 @@ class appMainWindow(QtWidgets.QMainWindow):
         DMDHalfWidth = self.calibration.DMDSizeX / 2
         offsetX = self.calibration.positionX
         offsetY = self.calibration.positionY
-        maskHalfWidth = self.calibration.width / 2
-        maskHalfHeight = self.calibration.height / 2
-        padYTop = int(DMDHalfHeight - maskHalfHeight + offsetY)
-        padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
-        padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
-        padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)
         # Rotate and pad scaled section of DMD mask to full DMD mask
         if not(blackBool):
             rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=0.0)
+            maskHalfWidth = rotatedImage.shape[1] / 2
+            maskHalfHeight = rotatedImage.shape[0] / 2
+            padYTop = int(DMDHalfHeight - maskHalfHeight + offsetY)
+            padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
+            padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
+            padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)    
             localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=0.0)
             localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
         else:
-            rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=255.0)        
+            rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=255.0)
+            maskHalfWidth = rotatedImage.shape[1] / 2
+            maskHalfHeight = rotatedImage.shape[0] / 2
+            padYTop = int(DMDHalfHeight - maskHalfHeight + offsetY)
+            padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
+            padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
+            padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)
             localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=255.0)
             localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
         localMask = localMask[1]
