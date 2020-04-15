@@ -30,7 +30,18 @@ class appMainWindowTests(unittest.TestCase):
     def test_ImageRecognition(self):
         # Test basic funtionality of the shape recognition sub-system with two test images
         # Image 1 is a black rectangle
-        testImage = ShapeRecognition.ShapeDetector("./TestImages/CalibrationImage.tif", False, '200')
+        calValues = np.array([
+            float(1920),
+            float(1080), 
+            float(1),
+            float(0), 
+            float(0),
+            float(-40),
+            float(990),
+            float(570),
+            float(165)
+        ])
+        testImage = ShapeRecognition.ShapeDetector("./TestImages/CalibrationImage.tif", calValues)
         # cv2.imshow("BlackRec",testImage.sourceImage)
         # cv2.imshow("Threshold BlackRec", testImage.thresholdImage)
         # cv2.imshow("BlackRecFiltered", cv2.resize(testImage.filteredImage, (960, 540)))

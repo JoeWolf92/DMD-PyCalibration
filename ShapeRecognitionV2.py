@@ -4,6 +4,7 @@ import cv2
 from skimage import exposure
 import numpy as np
 import imutils
+import matplotlib.pyplot as plt
 
 class ShapeDetector:
     def __init__(self, filename, calValues):
@@ -21,11 +22,12 @@ class ShapeDetector:
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
         self.thresholdCalibrationValue = calValues[8]
-        self.filteredImage = cv2.bilateralFilter(self.sourceImage, 11, 50, 50)
-        # cv2.imshow('Filtered Image', cv2.resize(self.filteredImage, (960, 540)))
+        self.filteredImage = cv2.bilateralFilter(self.sourceImage, 17, 50, 50)
+        self.filteredImage = cv2.threshold(self.filteredImage, self.thresholdCalibrationValue, 255, cv2.THRESH_BINARY)
+        # cv2.imshow('Filtered Image', cv2.resize(self.filteredImage[1], (960, 540)))
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
-        self.filteredImage = cv2.Canny(self.filteredImage, self.thresholdCalibrationValue * 0.9, self.thresholdCalibrationValue)
+        self.filteredImage = cv2.Canny(self.filteredImage[1], 10, 20)
         # cv2.imshow('Filtered Image', cv2.resize(self.filteredImage, (960, 540)))
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
@@ -48,6 +50,15 @@ class ShapeDetector:
         for cntr in contours:
             peri = cv2.arcLength(cntr, True)
             approx = cv2.approxPolyDP(cntr, 0.015 * peri, True)
+            # height1D, width1D = self.sourceImage.shape
+            # rgbImage = np.zeros([height1D, width1D, 3] , dtype=np.uint8)
+            # rgbImage[:,:,0] = self.sourceImage
+            # rgbImage[:,:,1] = self.sourceImage
+            # rgbImage[:,:,2] = self.sourceImage
+            # cv2.drawContours(rgbImage, [approx], 0, (255, 0, 0), 5)
+            # cv2.imshow('Filtered Image', cv2.resize(rgbImage, (960, 540)))
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
             if len(approx) == 4:
                 calibrationContour = approx
                 break
