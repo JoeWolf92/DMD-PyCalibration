@@ -1,1 +1,1 @@
-/Users/joewolf/Desktop/DMD-PyCalibration/TestImages/CalibrationImage.tif
+C:\Users\rbg94965\source\repos\DMD-PyCalibration\TestImages\CalibrationImage.tif
