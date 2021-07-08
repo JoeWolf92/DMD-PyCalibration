@@ -214,7 +214,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                     if not(blackBool):
                         localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY)
                     else:
-                        localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY_INV)
+                        localMaskTuple = cv2.threshold(localMaskAdded, 500, 255, cv2.THRESH_BINARY)
                     localMask = localMaskTuple[1]
                 else:
                     error_dialog = QtWidgets.QErrorMessage()
