@@ -439,20 +439,24 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.exec_()
             return
         if self.MaskChoice == 0:
-            imwrite('./Masks/Calibration/CalibrationMask-' + str(self.maskCountCalibration) + '_CCSize-' + self.ui.txt_CentreCircleSize.toPlainText() + '.bmp', self.Mask)
+            DefaultSaveName = './Masks/Calibration/CalibrationMask-' + str(self.maskCountCalibration) + '_CCSize-' + self.ui.txt_CentreCircleSize.toPlainText() + '.bmp'
             self.maskCountCalibration = self.maskCountCalibration + 1
         elif self.MaskChoice == 1:
-            saveMask = self.Mask.astype(np.uint8)
-            imwrite('./Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '.bmp', saveMask)
+            DefaultSaveName = './Masks/Threshold/ThresholdMask-' + str(self.maskCountThreshold) + '.bmp'
             self.maskCountThreshold = self.maskCountThreshold + 1
         elif self.MaskChoice == 2:
-            imwrite('./Masks/Slit/SlitMask-' + str(self.maskCountSlit) + '_NumSlits-' + str(self.ui.spinBox_NumberOfSlits.value()) + '_Width-' + self.ui.txt_SlitWidth.toPlainText() + '_Separation-' + self.ui.txt_SlitSeparation.toPlainText() + '_Rotation' + self.ui.txt_SlitRotation.toPlainText() + '.bmp', self.Mask)
+            DefaultSaveName = './Masks/Slit/SlitMask-' + str(self.maskCountSlit) + '_NumSlits-' + str(self.ui.spinBox_NumberOfSlits.value()) + '_Width-' + self.ui.txt_SlitWidth.toPlainText() + '_Separation-' + self.ui.txt_SlitSeparation.toPlainText() + '_Rotation' + self.ui.txt_SlitRotation.toPlainText() + '.bmp'
             self.maskCountSlit = self.maskCountSlit + 1
         elif self.MaskChoice == 3:
-            imwrite('./Masks/Pinhole/PinholeMask-' + str(self.maskCountPinhole) + '_NumPinholes-' + str(self.ui.spinBox_NumberOfPinholes.value()) + '_Radius-' + self.ui.txt_PinholeRadius.toPlainText() + 'Pitch-' + self.ui.txt_PinholePitch.toPlainText() + '_Rotation' + self.ui.txt_PinholeRotation.toPlainText() + '.bmp', self.Mask)
+            DefaultSaveName = './Masks/Pinhole/PinholeMask-' + str(self.maskCountPinhole) + '_NumPinholes-' + str(self.ui.spinBox_NumberOfPinholes.value()) + '_Radius-' + self.ui.txt_PinholeRadius.toPlainText() + 'Pitch-' + self.ui.txt_PinholePitch.toPlainText() + '_Rotation' + self.ui.txt_PinholeRotation.toPlainText() + '.bmp'
             self.maskCountPinhole = self.maskCountPinhole + 1
         else:
             imwrite('./Masks/Mask.bmp', self.Mask)
+        saveMask = self.Mask.astype(np.uint8)
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()",DefaultSaveName,"All Files (*);;Bitmap (*.bmp)", options=options)
+        imwrite(fileName, saveMask)
         return
 
 if __name__ == "__main__":
