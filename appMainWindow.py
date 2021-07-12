@@ -28,6 +28,8 @@ from scipy.ndimage.morphology import binary_opening
 import skimage.exposure as exposure
 #import libtiff
 
+from ALP4 import *
+
 class appMainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         #libtiff.libtiff_ctypes.suppress_warnings()
@@ -77,6 +79,14 @@ class appMainWindow(QtWidgets.QMainWindow):
             imageFile.close()
             self.onClick_Calibrate()
         self.MaskGeneratedFlag = False
+        self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
+        self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
+        self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
+        self.ui.btn_HaltDMD.clicked.connect(self.onClick_HaltDMD)
+        self.ui.btn_WhiteDMD.clicked.connect(self.onClick_WhiteDMD)
+        self.ui.btn_BlackDMD.clicked.connect(self.onClick_BlackDMD)
+        self.ui.btn_DisplayCurrentDMD.clicked.connect(self.onClick_DMDDisplayCurrentMask)
+        self.ui.btn_DisplayFileDMD.clicked.connect(self.onClick_DMDDisplayFileMask)
         return
 
     def showImageInView(self, image, view):
@@ -458,6 +468,134 @@ class appMainWindow(QtWidgets.QMainWindow):
         fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()",DefaultSaveName,"All Files (*);;Bitmap (*.bmp)", options=options)
         imwrite(fileName, saveMask)
         return
+
+    @pyqtSlot()
+    def onClick_ConnectDMD(self):
+        try:
+            self.DMD.Initialize()
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('DMD not connected.')
+            error_dialog.exec_()
+            return
+        if self.DMD.nSizeX != int(float(self.ui.txt_DMDSizeX.toPlainText())) or self.DMD.nSizeY != int(float(self.ui.txt_DMDSizeY.toPlainText())):
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('Size of DMD connected (' + str(self.DMD.nSizeX) + 'x' + str(self.DMD.nSizeY) + ' is not the same as the calibration settings. Calibration required.')
+            error_dialog.exec_()
+            self.onClick_LockCalibration()
+            self.ui.cbox_LockCalibration.setChecked(False)
+        self.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
+        return
+
+    @pyqtSlot()
+    def onClick_DisconnectDMD(self):
+        try:
+            self.DMD.Halt()
+            self.DMD.FreeSeq()
+            self.DMD.Free()
+            self.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
+    @pyqtSlot()
+    def onClick_WhiteDMD(self):
+        try:
+            mask = np.ones(self.DMD.nSizeY,self.DMD.nSizeX)*(2**8-1)
+            # Binary amplitude image (0 or 1)
+            bitDepth = 1    
+            # Allocate the onboard memory for the image sequence
+            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            # Send the image sequence as a 1D list/array/numpy array
+            DMD.SeqPut(imgData = mask)
+            # Set image rate to 50 Hz
+            #DMD.SetTiming(pictureTime = 20000)
+            DMD.run()
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
+    @pyqtSlot()
+    def onClick_BlackDMD(self):
+        try:
+            mask = np.zeros(self.DMD.nSizeY,self.DMD.nSizeX)
+            # Binary amplitude image (0 or 1)
+            bitDepth = 1    
+            # Allocate the onboard memory for the image sequence
+            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            # Send the image sequence as a 1D list/array/numpy array
+            DMD.SeqPut(imgData = mask)
+            # Set image rate to 50 Hz
+            #DMD.SetTiming(pictureTime = 20000)
+            DMD.run()
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
+    @pyqtSlot()
+    def onClick_HaltDMD(self):
+        try:
+            self.DMD.Halt()
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
+    @pyqtSlot()
+    def onClick_DMDDisplayCurrentMask(self):
+        try:
+            mask = self.Mask
+            # Binary amplitude image (0 or 1)
+            bitDepth = 1    
+            # Allocate the onboard memory for the image sequence
+            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            # Send the image sequence as a 1D list/array/numpy array
+            DMD.SeqPut(imgData = mask)
+            # Set image rate to 50 Hz
+            #DMD.SetTiming(pictureTime = 20000)
+            DMD.run()
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
+    @pyqtSlot()
+    def onClick_DMDDisplayFileMask(self):
+        try:
+            options = QtWidgets.QFileDialog.Options()
+            options |= QtWidgets.QFileDialog.DontUseNativeDialog
+            fileNameMaskDisplay, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;tiff (*.tiff);;tif (*.tif);;png (*.png)", options=options)
+            maskToDisplay = plt.imread(fileNameMaskDisplay)
+            maskToDisplay = maskToDisplay.astype(dtype = np.uint8)
+            # Binary amplitude image (0 or 1)
+            bitDepth = 1    
+            # Allocate the onboard memory for the image sequence
+            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            # Send the image sequence as a 1D list/array/numpy array
+            DMD.SeqPut(imgData = mask)
+            # Set image rate to 50 Hz
+            #DMD.SetTiming(pictureTime = 20000)
+            DMD.run()
+            return
+        except:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage("No DMD Connected.")
+            error_dialog.exec_()
+            return
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

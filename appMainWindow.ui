@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>934</width>
+    <width>1070</width>
     <height>742</height>
    </rect>
   </property>
@@ -666,7 +666,7 @@
      <rect>
       <x>20</x>
       <y>340</y>
-      <width>901</width>
+      <width>1031</width>
       <height>31</height>
      </rect>
     </property>
@@ -710,7 +710,7 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <property name="spacing">
-      <number>-1</number>
+      <number>6</number>
      </property>
      <item row="7" column="0" colspan="2">
       <widget class="QPushButton" name="btn_CamImageImport">
@@ -1112,14 +1112,95 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>390</y>
+      <width>131</width>
+      <height>273</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_DMDControls">
+       <property name="text">
+        <string>DMD Controls</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_ConnectDMD">
+       <property name="text">
+        <string>Connect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_DisconnectDMD">
+       <property name="text">
+        <string>Disconnect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_HaltDMD">
+       <property name="text">
+        <string>Halt Display</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_WhiteDMD">
+       <property name="text">
+        <string>White</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_BlackDMD">
+       <property name="text">
+        <string>Black</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_DisplayCurrentDMD">
+       <property name="text">
+        <string>Display Current Mask</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_DisplayFileDMD">
+       <property name="text">
+        <string>Display File Mask</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="view_DMDConnectionStatus">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>TestImages/red.png</pixmap>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>934</width>
-     <height>22</height>
+     <width>1070</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
