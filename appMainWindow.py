@@ -484,16 +484,16 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.exec_()
             self.onClick_LockCalibration()
             self.ui.cbox_LockCalibration.setChecked(False)
-        self.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
+        self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
         return
 
     @pyqtSlot()
     def onClick_DisconnectDMD(self):
         try:
             self.DMD.Halt()
-            self.DMD.FreeSeq()
+            #self.DMD.FreeSeq()
             self.DMD.Free()
-            self.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -504,16 +504,16 @@ class appMainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def onClick_WhiteDMD(self):
         try:
-            mask = np.ones(self.DMD.nSizeY,self.DMD.nSizeX)*(2**8-1)
+            mask = np.ones([self.DMD.nSizeY, self.DMD.nSizeX])*(2**8-1)
             # Binary amplitude image (0 or 1)
             bitDepth = 1    
             # Allocate the onboard memory for the image sequence
-            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            self.DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
             # Send the image sequence as a 1D list/array/numpy array
-            DMD.SeqPut(imgData = mask)
+            self.DMD.SeqPut(imgData = mask)
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
-            DMD.run()
+            self.DMD.Run()
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -524,16 +524,16 @@ class appMainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def onClick_BlackDMD(self):
         try:
-            mask = np.zeros(self.DMD.nSizeY,self.DMD.nSizeX)
+            mask = np.zeros([self.DMD.nSizeY,self.DMD.nSizeX])
             # Binary amplitude image (0 or 1)
             bitDepth = 1    
             # Allocate the onboard memory for the image sequence
-            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            self.DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
             # Send the image sequence as a 1D list/array/numpy array
-            DMD.SeqPut(imgData = mask)
+            self.DMD.SeqPut(imgData = mask)
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
-            DMD.run()
+            self.DMD.Run()
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -559,12 +559,12 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Binary amplitude image (0 or 1)
             bitDepth = 1    
             # Allocate the onboard memory for the image sequence
-            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            self.DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
             # Send the image sequence as a 1D list/array/numpy array
-            DMD.SeqPut(imgData = mask)
+            self.DMD.SeqPut(imgData = mask)
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
-            DMD.run()
+            self.DMD.Run()
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -583,12 +583,12 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Binary amplitude image (0 or 1)
             bitDepth = 1    
             # Allocate the onboard memory for the image sequence
-            DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
+            self.DMD.SeqAlloc(nbImg = 1, bitDepth = bitDepth)
             # Send the image sequence as a 1D list/array/numpy array
-            DMD.SeqPut(imgData = mask)
+            self.DMD.SeqPut(imgData = maskToDisplay)
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
-            DMD.run()
+            self.DMD.Run()
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
