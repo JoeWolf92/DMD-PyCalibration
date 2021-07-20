@@ -14,6 +14,9 @@ class ShapeDetector:
         else:
             self.shapeColour = 0
         self.sourceImage = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+        if self.sourceImage == None:
+            raise ValueError("Calibration Image Not Found.")
+            return
         # cv2.imshow('Source Image', cv2.resize(self.sourceImage, (960, 540)))
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()

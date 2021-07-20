@@ -77,7 +77,13 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.fileNameCameraImage = imageFile.read()
             self.calibrationImageStorage = self.fileNameCameraImage
             imageFile.close()
-            self.onClick_Calibrate()
+            #if self.calibrationImageStorage
+            try:
+                self.onClick_Calibrate()
+            except:
+                error_dialog = QtWidgets.QErrorMessage()
+                error_dialog.showMessage('Calibration Image Not Found.')
+                error_dialog.exec_()
         self.MaskGeneratedFlag = False
         self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
@@ -336,7 +342,13 @@ class appMainWindow(QtWidgets.QMainWindow):
             float(self.ui.txt_CalHeight.toPlainText()),
             float(self.ui.txt_CalibrationThreshold.toPlainText())
         ])
-        self.calibration = sr.ShapeDetector(self.fileNameCameraImage, calValues)
+        try:
+            self.calibration = sr.ShapeDetector(self.fileNameCameraImage, calValues)
+        except ValueError:
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('Problem with Calibration Image File.')
+            error_dialog.exec_()
+            return
         try:
             self.cntrPoints = self.calibration.detectCalibration()
             height1D, width1D = self.calibration.sourceImage.shape
