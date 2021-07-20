@@ -85,7 +85,8 @@ class appMainWindow(QtWidgets.QMainWindow):
                 error_dialog.showMessage('Calibration Image Not Found.')
                 error_dialog.exec_()
         self.MaskGeneratedFlag = False
-        self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
+        self.DMDConnectFlag = False
+        self.DMDDisplayFlag = False
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
         self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
         self.ui.btn_HaltDMD.clicked.connect(self.onClick_HaltDMD)
@@ -272,11 +273,11 @@ class appMainWindow(QtWidgets.QMainWindow):
         maxValue = np.amax(localArray)
         self.ui.label_highValueThreshold.setText(str(maxValue))
         self.ui.label_lowValueThreshold.setText(str(minValue))
-        self.ui.txt_currentThreshold.setPlainText(str(minValue))
-        self.ui.slider_thresholdValue.setValue(minValue)
-        self.ui.slider_thresholdValue.setSliderPosition(minValue)
         self.ui.slider_thresholdValue.setMinimum(minValue)
         self.ui.slider_thresholdValue.setMaximum(maxValue)
+        self.ui.slider_thresholdValue.setValue(maxValue/2)
+        self.ui.slider_thresholdValue.setSliderPosition(maxValue/2)
+        self.ui.txt_currentThreshold.setPlainText(str(maxValue/2))
         self.repaint()
         return
     
@@ -484,7 +485,10 @@ class appMainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def onClick_ConnectDMD(self):
         try:
+            if self.DMDConnectFlag == False:
+                self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
             self.DMD.Initialize()
+            self.DMDConnectFlag = True
         except:
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('DMD not connected.')
@@ -503,9 +507,12 @@ class appMainWindow(QtWidgets.QMainWindow):
     def onClick_DisconnectDMD(self):
         try:
             self.DMD.Halt()
-            #self.DMD.FreeSeq()
+            if self.DMDDisplayFlag == True:
+                self.DMD.FreeSeq()
             self.DMD.Free()
             self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+            self.DMDConnectFlag = False
+            self.DMDDisplayFlag = False
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -526,6 +533,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
             self.DMD.Run()
+            self.DMDConnectFlag = True
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -546,6 +554,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
             self.DMD.Run()
+            self.DMDConnectFlag = True
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -577,6 +586,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
             self.DMD.Run()
+            self.DMDConnectFlag = True
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()
@@ -601,6 +611,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             # Set image rate to 50 Hz
             #DMD.SetTiming(pictureTime = 20000)
             self.DMD.Run()
+            self.DMDConnectFlag = True
             return
         except:
             error_dialog = QtWidgets.QErrorMessage()

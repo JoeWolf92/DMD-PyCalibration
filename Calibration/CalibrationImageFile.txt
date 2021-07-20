@@ -1,1 +1,1 @@
-C:\Users\rbg94965\source\repos\DMD-PyCalibration\TestImages\CalibrationImage.tif
+C:/Users/rbg94965/Desktop/DMD PSF/Calibration/Calibration Image 500x960 -45.tif
