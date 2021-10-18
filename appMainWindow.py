@@ -64,9 +64,9 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.ui.txt_DMDSizeX.setPlainText(str(self.calibrationValuesStorage[0]))
             self.ui.txt_DMDSizeY.setPlainText(str(self.calibrationValuesStorage[1]))
             if self.calibrationValuesStorage[2] == 1:
-                self.ui.radioButton_BlackImageMask.setChecked(True)
+                self.ui.radioButton_CamDMD2ImageMask.setChecked(True)
             else:
-                self.ui.radioButton_WhiteImageMask.setChecked(True)
+                self.ui.radioButton_CamDMD1ImageMask.setChecked(True)
             self.ui.txt_CalPositionX.setPlainText(str(self.calibrationValuesStorage[3]))
             self.ui.txt_CalPositionY.setPlainText(str(self.calibrationValuesStorage[4]))
             self.ui.txt_CalRotation.setPlainText(str(self.calibrationValuesStorage[5]))
@@ -90,8 +90,8 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
         self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
         self.ui.btn_HaltDMD.clicked.connect(self.onClick_HaltDMD)
-        self.ui.btn_WhiteDMD.clicked.connect(self.onClick_WhiteDMD)
-        self.ui.btn_BlackDMD.clicked.connect(self.onClick_BlackDMD)
+        self.ui.btn_CamDMD1DMD.clicked.connect(self.onClick_CamDMD1DMD)
+        self.ui.btn_CamDMD2DMD.clicked.connect(self.onClick_CamDMD2DMD)
         self.ui.btn_DisplayCurrentDMD.clicked.connect(self.onClick_DMDDisplayCurrentMask)
         self.ui.btn_DisplayFileDMD.clicked.connect(self.onClick_DMDDisplayFileMask)
         return
@@ -107,7 +107,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         view.repaint()
         return
 
-    def maskGenerationCalibration(self, blackBool):
+    def maskGenerationCalibration(self, CamDMD2Bool):
         xSize = int(float(self.ui.txt_DMDSizeX.toPlainText()))
         ySize = int(float(self.ui.txt_DMDSizeY.toPlainText()))
         maskCentreX = int(float(self.ui.txt_DMDCalibrationMaskPositionX.toPlainText()))
@@ -116,20 +116,20 @@ class appMainWindow(QtWidgets.QMainWindow):
         maskWidth = int(float(self.ui.txt_DMDCalibrationMaskWidth.toPlainText()))
         maskRotation = float(self.ui.txt_DMDCalibrationMaskRotation.toPlainText())
         centreCircleRadius = float(self.ui.txt_CentreCircleSize.toPlainText())
-        if blackBool:
+        if CamDMD2Bool:
             localMask = np.zeros((maskHeight, maskWidth), dtype=np.uint8)
         else:
             localMask = np.ones((maskHeight, maskWidth), dtype=np.uint8) * 255
         for x in range(maskWidth):
             for y in range(maskHeight):
                 if sqrt(((x - (maskWidth/2)) ** 2) + ((y - (maskHeight/2)) ** 2)) < centreCircleRadius:
-                    if blackBool:
+                    if CamDMD2Bool:
                         localMask[y, x] = 255
                     else:
                         localMask[y, x] = 0
         shiftX = -maskCentreX
         shiftY = -maskCentreY
-        if blackBool:
+        if CamDMD2Bool:
             localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=255)
             rotHeight, rotWidth = localMask.shape
             padY = round((ySize - rotHeight) / 2)
@@ -152,7 +152,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.MaskGeneratedFlag = True
         return localMask
         
-    def maskGenerationThreshold(self, blackBool):
+    def maskGenerationThreshold(self, CamDMD2Bool):
         if not(self.ui.cbox_LockCalibration.isChecked()):
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('Lock above calibration before generating threshold masks.')
@@ -195,7 +195,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         offsetX = self.calibration.positionX
         offsetY = self.calibration.positionY
         # Rotate and pad scaled section of DMD mask to full DMD mask
-        if not(blackBool):
+        if not(CamDMD2Bool):
             rotatedImage = rotate(warpImageScaled, angle=self.calibration.rotation, cval=0.0)
             maskHalfWidth = rotatedImage.shape[1] / 2
             maskHalfHeight = rotatedImage.shape[0] / 2
@@ -228,7 +228,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                 localMaskToAdd = localMaskToAdd.astype(dtype = np.uint8)
                 if localMask.shape == localMaskToAdd.shape:
                     localMaskAdded = localMask + localMaskToAdd
-                    if not(blackBool):
+                    if not(CamDMD2Bool):
                         localMaskTuple = cv2.threshold(localMaskAdded, 200, 255, cv2.THRESH_BINARY)
                     else:
                         localMaskTuple = cv2.threshold(localMaskAdded, 500, 255, cv2.THRESH_BINARY)
@@ -250,12 +250,12 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.MaskGeneratedFlag = True
         return localMask
         
-    def maskGenerationSlit(self, blackBool):
+    def maskGenerationSlit(self, CamDMD2Bool):
         print('Slit')
         self.MaskGeneratedFlag = True
         return
 
-    def maskGenerationPinhole(self, blackBool):
+    def maskGenerationPinhole(self, CamDMD2Bool):
         print('Pinhole')
         self.MaskGeneratedFlag = True
         return
@@ -328,7 +328,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             error_dialog.showMessage('DMD calibration ratio and DMD X & Y size must be numeric.')
             error_dialog.exec_()
             return
-        if self.ui.radioButton_BlackImageMask.isChecked():
+        if self.ui.radioButton_CamDMD2ImageMask.isChecked():
             checkState = 1
         else:
             checkState = 0
@@ -393,8 +393,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.ui.txt_DMDSizeY.setEnabled(False)
             self.ui.txt_CalPositionX.setEnabled(False)
             self.ui.txt_CalPositionY.setEnabled(False)
-            self.ui.radioButton_BlackImageMask.setEnabled(False)
-            self.ui.radioButton_WhiteImageMask.setEnabled(False)
+            self.ui.radioButton_CamDMD2ImageMask.setEnabled(False)
+            self.ui.radioButton_CamDMD1ImageMask.setEnabled(False)
             self.ui.txt_CalRotation.setEnabled(False)
             self.ui.txt_CalWidth.setEnabled(False)
             self.ui.txt_CalHeight.setEnabled(False)
@@ -406,8 +406,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.ui.txt_DMDSizeY.setEnabled(True)
             self.ui.txt_CalPositionX.setEnabled(True)
             self.ui.txt_CalPositionY.setEnabled(True)
-            self.ui.radioButton_BlackImageMask.setEnabled(True)
-            self.ui.radioButton_WhiteImageMask.setEnabled(True)
+            self.ui.radioButton_CamDMD2ImageMask.setEnabled(True)
+            self.ui.radioButton_CamDMD1ImageMask.setEnabled(True)
             self.ui.txt_CalRotation.setEnabled(True)
             self.ui.txt_CalWidth.setEnabled(True)
             self.ui.txt_CalHeight.setEnabled(True)
@@ -419,8 +419,8 @@ class appMainWindow(QtWidgets.QMainWindow):
             self.ui.txt_DMDSizeY.setEnabled(True)
             self.ui.txt_CalPositionX.setEnabled(True)
             self.ui.txt_CalPositionY.setEnabled(True)
-            self.ui.radioButton_BlackImageMask.setEnabled(True)
-            self.ui.radioButton_WhiteImageMask.setEnabled(True)
+            self.ui.radioButton_CamDMD2ImageMask.setEnabled(True)
+            self.ui.radioButton_CamDMD1ImageMask.setEnabled(True)
             self.ui.txt_CalRotation.setEnabled(True)
             self.ui.txt_CalWidth.setEnabled(True)
             self.ui.txt_CalHeight.setEnabled(True)
@@ -435,13 +435,13 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.Mask = None
         self.MaskGeneratedFlag = False
         if self.ui.tab_MaskFunctionality.currentIndex() == 0:
-            self.Mask = self.maskGenerationCalibration(self.ui.radioButton_BlackDMDMask.isChecked())
+            self.Mask = self.maskGenerationCalibration(self.ui.radioButton_CamDMD2DMDMask.isChecked())
         elif self.ui.tab_MaskFunctionality.currentIndex() == 1:
-            self.Mask = self.maskGenerationThreshold(self.ui.radioButton_BlackDMDMask.isChecked())
+            self.Mask = self.maskGenerationThreshold(self.ui.radioButton_CamDMD2DMDMask.isChecked())
         elif self.ui.tab_MaskFunctionality.currentIndex() == 2:
-            self.Mask = self.maskGenerationSlit(self.ui.radioButton_BlackDMDMask.isChecked())
+            self.Mask = self.maskGenerationSlit(self.ui.radioButton_CamDMD2DMDMask.isChecked())
         elif self.ui.tab_MaskFunctionality.currentIndex() == 3:
-            self.Mask = self.maskGenerationPinhole(self.ui.radioButton_BlackDMDMask.isChecked())
+            self.Mask = self.maskGenerationPinhole(self.ui.radioButton_CamDMD2DMDMask.isChecked())
         if not(self.MaskGeneratedFlag):
             return
         else:
@@ -521,7 +521,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             return
 
     @pyqtSlot()
-    def onClick_WhiteDMD(self):
+    def onClick_CamDMD1DMD(self):
         try:
             mask = np.ones([self.DMD.nSizeY, self.DMD.nSizeX])*(2**8-1)
             # Binary amplitude image (0 or 1)
@@ -542,7 +542,7 @@ class appMainWindow(QtWidgets.QMainWindow):
             return
 
     @pyqtSlot()
-    def onClick_BlackDMD(self):
+    def onClick_CamDMD2DMD(self):
         try:
             mask = np.zeros([self.DMD.nSizeY,self.DMD.nSizeX])
             # Binary amplitude image (0 or 1)
