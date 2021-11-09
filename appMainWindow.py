@@ -31,6 +31,7 @@ import skimage.exposure as exposure
 
 import worker
 from PyQt5.QtCore import QThread
+import ctypes as ct
 
 from ALP4 import *
 
@@ -92,6 +93,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.DMDConnectFlag = False
         self.DMDConnectionLostFlag = False
         self.DMDDisplayFlag = False
+        self.DMDReconnectCount = 0
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
         self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
         self.ui.btn_HaltDMD.clicked.connect(self.onClick_HaltDMD)
@@ -122,42 +124,51 @@ class appMainWindow(QtWidgets.QMainWindow):
         return
 
     def statusCheckDMD(self):
-        if self.DMDConnectFlag:
+        if self.DMDConnectFlag and not(self.DMDConnectionLostFlag):
             try:
-                self.DMD.DevInquire(inquireType = 'ALP_PROJ_MODE') ### NEEDS TESTING
+                testVal = int(self.DMD.DevInquire(inquireType = ALP_USB_CONNECTION).value)
+                if testVal != 0:
+                    self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
+                    self.DMDConnectionLostFlag = True
+                    self.DMDReconnectCount = 0
             except:
-                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
-                self.DMDConnectionLostFlag = True
-                self.DMDConnectionCount = 0
-                while self.DMDConnectionCount < 5:
-                    time.sleep(1)
-                    if self.DMDConnectFlag:
-                        try:
-                            self.DMD.Halt()
-                            if self.DMDDisplayFlag == True:
-                                self.DMD.FreeSeq()
-                            self.DMD.Free()
-                            self.DMDConnectFlag = False
-                            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
-                        except:
-                            self.DMDConnectionCount = self.DMDConnectionCount + 1
-                    if not(self.DMDConnectFlag):
-                        try:
-                            self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
-                            self.DMD.Initialize()
-                            self.DMDConnectFlag = True
-                            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
-                            return
-                        except:
-                            self.DMDConnectionCount = self.DMDConnectionCount + 1
                 self.DMDConnectFlag = False
                 self.DMDDisplayFlag = False
-                self.DMDConnectionLost = False
+                self.DMDConnectionLostFlag = False
                 self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
                 error_dialog = QtWidgets.QErrorMessage()
-                error_dialog.showMessage('DMD connection lost! Power cycle then retry.')
+                error_dialog.showMessage('DMD connection lost!')
                 error_dialog.exec_()
                 return
+        if self.DMDConnectFlag and self.DMDConnectionLostFlag and self.DMDReconnectCount < 10:
+            try:
+                self.DMD.Halt()
+                if self.DMDDisplayFlag == True:
+                    self.DMD.FreeSeq()
+                self.DMD.Free()
+                self.DMDConnectFlag = False
+            except:
+                self.DMDConnectionCount = self.DMDConnectionCount + 1
+        if not(self.DMDConnectFlag) and self.DMDConnectionLostFlag and self.DMDReconnectCount < 10:
+            try:
+                self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
+                self.DMD.Initialize()
+                self.DMDConnectFlag = True
+                self.DMDConnectionLostFlag = False
+                self.DMDReconnectCount = 0
+                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
+                return
+            except:
+                self.DMDConnectionCount = self.DMDConnectionCount + 1
+        if self.DMDReconnectCount >= 10:
+            self.DMDConnectFlag = False
+            self.DMDDisplayFlag = False
+            self.DMDConnectionLostFlag = False
+            self.DMDReconnectCount = 0
+            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+            error_dialog = QtWidgets.QErrorMessage()
+            error_dialog.showMessage('DMD connection lost!')
+            error_dialog.exec_()
         return
 
     def showImageInView(self, image, view):

@@ -10,7 +10,7 @@ class Worker(QObject):
     @pyqtSlot()
     def procCounter(self): # A slot takes no params
         while True:
-            time.sleep(10)
+            time.sleep(5)
             self.statusCheckDMDTimer.emit()
 
         self.finished.emit()
