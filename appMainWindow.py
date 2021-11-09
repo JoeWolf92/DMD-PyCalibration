@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import sys
+import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
@@ -27,6 +28,9 @@ import ntpath
 from scipy.ndimage.morphology import binary_opening
 import skimage.exposure as exposure
 #import libtiff
+
+import worker
+from PyQt5.QtCore import QThread
 
 from ALP4 import *
 
@@ -86,6 +90,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                 error_dialog.exec_()
         self.MaskGeneratedFlag = False
         self.DMDConnectFlag = False
+        self.DMDConnectionLostFlag = False
         self.DMDDisplayFlag = False
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
         self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
@@ -94,6 +99,65 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_CamDMD2DMD.clicked.connect(self.onClick_CamDMD2DMD)
         self.ui.btn_DisplayCurrentDMD.clicked.connect(self.onClick_DMDDisplayCurrentMask)
         self.ui.btn_DisplayFileDMD.clicked.connect(self.onClick_DMDDisplayFileMask)
+        ###### Threading
+        # Create worker and thread inside form - no parents!
+        self.workerObj = worker.Worker()
+        self.thread = QThread()
+        # Connect Workers Signals to Form method slots to post data.
+        self.workerObj.statusCheckDMDTimer.connect(self.statusCheckDMD)
+        # Move the Worker object to the Thread object
+        self.workerObj.moveToThread(self.thread)
+        # Connect Worker Signals to the Thread slots
+        self.workerObj.finished.connect(self.thread.quit)
+        # Connect Thread started signal to Worker operational slot method
+        self.thread.started.connect(self.workerObj.procCounter)
+        # * - Thread finished signal will close the app if you want!
+        #self.thread.finished.connect(app.exit)
+        # Start the thread
+        self.thread.start()
+        #############
+        self.onClick_ConnectDMD()
+        if self.DMDConnectFlag:
+            self.onClick_CamDMD1DMD()
+        return
+
+    def statusCheckDMD(self):
+        if self.DMDConnectFlag:
+            try:
+                self.DMD.DevInquire(inquireType = 'ALP_PROJ_MODE') ### NEEDS TESTING
+            except:
+                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
+                self.DMDConnectionLostFlag = True
+                self.DMDConnectionCount = 0
+                while self.DMDConnectionCount < 5:
+                    time.sleep(1)
+                    if self.DMDConnectFlag:
+                        try:
+                            self.DMD.Halt()
+                            if self.DMDDisplayFlag == True:
+                                self.DMD.FreeSeq()
+                            self.DMD.Free()
+                            self.DMDConnectFlag = False
+                            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+                        except:
+                            self.DMDConnectionCount = self.DMDConnectionCount + 1
+                    if not(self.DMDConnectFlag):
+                        try:
+                            self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
+                            self.DMD.Initialize()
+                            self.DMDConnectFlag = True
+                            self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
+                            return
+                        except:
+                            self.DMDConnectionCount = self.DMDConnectionCount + 1
+                self.DMDConnectFlag = False
+                self.DMDDisplayFlag = False
+                self.DMDConnectionLost = False
+                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
+                error_dialog = QtWidgets.QErrorMessage()
+                error_dialog.showMessage('DMD connection lost! Power cycle then retry.')
+                error_dialog.exec_()
+                return
         return
 
     def showImageInView(self, image, view):
@@ -251,14 +315,63 @@ class appMainWindow(QtWidgets.QMainWindow):
         return localMask
         
     def maskGenerationSlit(self, CamDMD2Bool):
-        print('Slit')
+        xSize = int(float(self.ui.txt_DMDSizeX.toPlainText()))
+        ySize = int(float(self.ui.txt_DMDSizeY.toPlainText()))
+        localMask = np.zeros((ySize, xSize), dtype=np.uint8)
         self.MaskGeneratedFlag = True
-        return
+        error_dialog = QtWidgets.QErrorMessage()
+        error_dialog.showMessage('Feature under development. Blank mask returned.')
+        error_dialog.exec_()
+        return localMask
 
     def maskGenerationPinhole(self, CamDMD2Bool):
-        print('Pinhole')
+        xSize = int(float(self.ui.txt_DMDSizeX.toPlainText()))
+        ySize = int(float(self.ui.txt_DMDSizeY.toPlainText()))
+        # pinholeNum = int(float(self.ui.spinBox_NumberOfPinholes.Value()))
+        # pinholeRadius = int(float(self.ui.txt_PinholeRadius.toPlainText()))
+        # pinholePitch = int(float(self.ui.txt_PinholePitch.toPlainText()))
+        # pinholeRotation = int(float(self.ui.txt_PinholeRotation.toPlainText()))
+        # pinholeX = int(float(self.ui.txt_PinholeX.toPlainText()))
+        # pinholeY = int(float(self.ui.txt_PinholeY.toPlainText()))
+        # if CamDMD2Bool:
+        #     localMask = np.zeros((ySize, xSize), dtype=np.uint8)
+        # else:
+        #     localMask = np.ones((ySize, xSize), dtype=np.uint8) * 255
+        # for x in range(xSize):
+        #     for y in range(ySize):
+        #         if sqrt(((x - (maskWidth/2)) ** 2) + ((y - (maskHeight/2)) ** 2)) < centreCircleRadius:
+        #             if CamDMD2Bool:
+        #                 localMask[y, x] = 255
+        #             else:
+        #                 localMask[y, x] = 0
+        # shiftX = -maskCentreX
+        # shiftY = -maskCentreY
+        # if CamDMD2Bool:
+        #     localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=255)
+        #     rotHeight, rotWidth = localMask.shape
+        #     padY = round((ySize - rotHeight) / 2)
+        #     padX = round((xSize - rotWidth) / 2)
+        #     localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (255, 255))
+        #     if localMask.shape[0] < 1080 or localMask.shape[1] < 1920:
+        #         localMask = np.pad(localMask, ((0, 1), (0, 1)), 'constant', constant_values = (255, 255))
+        #     localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
+        #     localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=255)
+        # else:
+        #     localMask = rotate(localMask, angle = maskRotation, mode='constant', cval=0)
+        #     rotHeight, rotWidth = localMask.shape
+        #     padY = int((ySize - rotHeight) / 2)
+        #     padX = int((xSize - rotWidth) / 2)
+        #     localMask = np.pad(localMask, ((padY, padY), (padX, padX)), 'constant', constant_values = (0, 0))
+        #     if localMask.shape[0] < 1080 or localMask.shape[1] < 1920:
+        #         localMask = np.pad(localMask, ((0, 1), (0, 1)), 'constant', constant_values = (255, 255))
+        #     localMask = localMask[0:int(float(self.ui.txt_DMDSizeY.toPlainText())),0:int(float(self.ui.txt_DMDSizeX.toPlainText()))]
+        #     localMask = scipy.ndimage.shift(localMask, np.array([shiftY, shiftX]), cval=0)
+        localMask = np.zeros((ySize, xSize), dtype=np.uint8)
         self.MaskGeneratedFlag = True
-        return
+        error_dialog = QtWidgets.QErrorMessage()
+        error_dialog.showMessage('Feature under development. Blank mask returned.')
+        error_dialog.exec_()
+        return localMask
 
     @pyqtSlot()
     def valueChange_ThresholdValue(self):
