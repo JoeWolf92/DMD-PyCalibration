@@ -8,6 +8,7 @@
 
 import sys
 import time
+from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSlot
 
@@ -94,6 +95,7 @@ class appMainWindow(QtWidgets.QMainWindow):
         self.DMDConnectionLostFlag = False
         self.DMDDisplayFlag = False
         self.DMDReconnectCount = 0
+        self.DMDReconnectAttemptLimit = 10
         self.ui.btn_ConnectDMD.clicked.connect(self.onClick_ConnectDMD)
         self.ui.btn_DisconnectDMD.clicked.connect(self.onClick_DisconnectDMD)
         self.ui.btn_HaltDMD.clicked.connect(self.onClick_HaltDMD)
@@ -124,6 +126,8 @@ class appMainWindow(QtWidgets.QMainWindow):
         return
 
     def statusCheckDMD(self):
+        now = datetime.now()
+        currentTime = now.strftime("%H:%M:%S")
         if self.DMDConnectFlag and not(self.DMDConnectionLostFlag):
             try:
                 testVal = int(self.DMD.DevInquire(inquireType = ALP_USB_CONNECTION).value)
@@ -131,16 +135,16 @@ class appMainWindow(QtWidgets.QMainWindow):
                     self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
                     self.DMDConnectionLostFlag = True
                     self.DMDReconnectCount = 0
+                    print('Disconnected at: ', currentTime)
+                else:
+                    self.DMDConnectFlag = True
+                    #print('Connected at: ', currentTime)
             except:
-                self.DMDConnectFlag = False
-                self.DMDDisplayFlag = False
-                self.DMDConnectionLostFlag = False
-                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
-                error_dialog = QtWidgets.QErrorMessage()
-                error_dialog.showMessage('DMD connection lost!')
-                error_dialog.exec_()
-                return
-        if self.DMDConnectFlag and self.DMDConnectionLostFlag and self.DMDReconnectCount < 10:
+                self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
+                self.DMDConnectionLostFlag = True
+                self.DMDReconnectCount = 0
+                print('Disconnected at: ', currentTime)
+        if self.DMDConnectFlag and self.DMDConnectionLostFlag and self.DMDReconnectCount < self.DMDReconnectAttemptLimit:
             try:
                 self.DMD.Halt()
                 if self.DMDDisplayFlag == True:
@@ -149,7 +153,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                 self.DMDConnectFlag = False
             except:
                 self.DMDConnectionCount = self.DMDConnectionCount + 1
-        if not(self.DMDConnectFlag) and self.DMDConnectionLostFlag and self.DMDReconnectCount < 10:
+        if not(self.DMDConnectFlag) and self.DMDConnectionLostFlag and self.DMDReconnectCount < self.DMDReconnectAttemptLimit:
             try:
                 self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
                 self.DMD.Initialize()
@@ -160,7 +164,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                 return
             except:
                 self.DMDConnectionCount = self.DMDConnectionCount + 1
-        if self.DMDReconnectCount >= 10:
+        if self.DMDReconnectCount >= self.DMDReconnectAttemptLimit:
             self.DMDConnectFlag = False
             self.DMDDisplayFlag = False
             self.DMDConnectionLostFlag = False
