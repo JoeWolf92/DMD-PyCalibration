@@ -128,6 +128,9 @@ class appMainWindow(QtWidgets.QMainWindow):
     def statusCheckDMD(self):
         now = datetime.now()
         currentTime = now.strftime("%H:%M:%S")
+        if self.DMDConnectionLostFlag:
+            print('Trying to reconnect at: ', currentTime)
+            print('Connection attempt: ', self.DMDReconnectCount)
         if self.DMDConnectFlag and not(self.DMDConnectionLostFlag):
             try:
                 testVal = int(self.DMD.DevInquire(inquireType = ALP_USB_CONNECTION).value)
@@ -137,8 +140,7 @@ class appMainWindow(QtWidgets.QMainWindow):
                     self.DMDReconnectCount = 0
                     print('Disconnected at: ', currentTime)
                 else:
-                    self.DMDConnectFlag = True
-                    #print('Connected at: ', currentTime)
+                    print('Connected at: ', currentTime)
             except:
                 self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/orange.png"))
                 self.DMDConnectionLostFlag = True
@@ -146,13 +148,13 @@ class appMainWindow(QtWidgets.QMainWindow):
                 print('Disconnected at: ', currentTime)
         if self.DMDConnectFlag and self.DMDConnectionLostFlag and self.DMDReconnectCount < self.DMDReconnectAttemptLimit:
             try:
-                self.DMD.Halt()
-                if self.DMDDisplayFlag == True:
-                    self.DMD.FreeSeq()
-                self.DMD.Free()
+                # self.DMD.Halt()
+                # if self.DMDDisplayFlag == True:
+                #     self.DMD.FreeSeq()
                 self.DMDConnectFlag = False
+                self.DMD.Free()
             except:
-                self.DMDConnectionCount = self.DMDConnectionCount + 1
+                self.DMDReconnectCount = self.DMDReconnectCount + 1
         if not(self.DMDConnectFlag) and self.DMDConnectionLostFlag and self.DMDReconnectCount < self.DMDReconnectAttemptLimit:
             try:
                 self.DMD = ALP4(version = '4.3', libDir = 'C:/Program Files/ALP-4.3/ALP-4.3 API')
@@ -160,15 +162,17 @@ class appMainWindow(QtWidgets.QMainWindow):
                 self.DMDConnectFlag = True
                 self.DMDConnectionLostFlag = False
                 self.DMDReconnectCount = 0
+                print('Reconnected at: ', currentTime)
                 self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/green.png"))
                 return
             except:
-                self.DMDConnectionCount = self.DMDConnectionCount + 1
+                self.DMDReconnectCount = self.DMDReconnectCount + 1
         if self.DMDReconnectCount >= self.DMDReconnectAttemptLimit:
             self.DMDConnectFlag = False
             self.DMDDisplayFlag = False
             self.DMDConnectionLostFlag = False
             self.DMDReconnectCount = 0
+            print('Reconnect failed at: ', currentTime)
             self.ui.view_DMDConnectionStatus.setPixmap(QtGui.QPixmap("./TestImages/red.png"))
             error_dialog = QtWidgets.QErrorMessage()
             error_dialog.showMessage('DMD connection lost!')
@@ -281,7 +285,13 @@ class appMainWindow(QtWidgets.QMainWindow):
             padYTop = int(DMDHalfHeight - maskHalfHeight + offsetY)
             padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
             padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
-            padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)    
+            padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)
+            print(maskHalfWidth)
+            print(maskHalfHeight)
+            print(padYTop)
+            print(padYBottom)
+            print(padXLeft)  
+            print(padXRight)
             localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=0.0)
             localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY)
         else:
@@ -292,6 +302,12 @@ class appMainWindow(QtWidgets.QMainWindow):
             padYBottom = int(DMDHalfHeight - maskHalfHeight - offsetY)
             padXLeft = int(DMDHalfWidth - maskHalfWidth + offsetX)
             padXRight = int(DMDHalfWidth - maskHalfWidth - offsetX)
+            print(maskHalfWidth)
+            print(maskHalfHeight)
+            print(padYTop)
+            print(padYBottom)
+            print(padXLeft)  
+            print(padXRight)
             localMask = np.pad(rotatedImage, ((padYTop, padYBottom), (padXLeft, padXRight)), 'constant', constant_values=255.0)
             localMask = cv2.threshold(localMask, int(float(self.ui.txt_currentThreshold.toPlainText())), 255, cv2.THRESH_BINARY_INV)
         localMask = localMask[1]
