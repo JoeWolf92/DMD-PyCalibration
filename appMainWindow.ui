@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1070</width>
+    <width>1062</width>
     <height>742</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_Calibration">
      <attribute name="title">
@@ -230,6 +230,115 @@
         <widget class="QPushButton" name="btn_SendCalParameters">
          <property name="text">
           <string>Insert parameters above</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_Rings">
+     <attribute name="title">
+      <string>Rings/Circles</string>
+     </attribute>
+     <widget class="QWidget" name="gridLayoutWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>20</y>
+        <width>167</width>
+        <height>213</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_RingsOuterRadius">
+         <property name="text">
+          <string>Outer Radius (px)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_RingsInnerRadius">
+         <property name="text">
+          <string>Inner Radius (px)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPlainTextEdit" name="txt_RingsOuterRadius">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="plainText">
+          <string>10</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_RingsPositionY">
+         <property name="text">
+          <string>Centre Y (px)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPlainTextEdit" name="txt_RingsInnerRadius">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+         <property name="placeholderText">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_RingsPositionX">
+         <property name="text">
+          <string>Centre X (px)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPlainTextEdit" name="txt_RingsPositionX">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="plainText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPlainTextEdit" name="txt_RingsPositionY">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="plainText">
+          <string>0</string>
          </property>
         </widget>
        </item>
@@ -813,7 +922,7 @@
      <item row="4" column="0">
       <widget class="QRadioButton" name="radioButton_BlackImageMask">
        <property name="text">
-        <string>Black Mask</string>
+        <string>DMDCam2 Mask</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -826,7 +935,7 @@
      <item row="4" column="1">
       <widget class="QRadioButton" name="radioButton_WhiteImageMask">
        <property name="text">
-        <string>White Mask</string>
+        <string>DMDCam1 Mask</string>
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
@@ -1076,7 +1185,7 @@
      <item row="0" column="0" colspan="2">
       <widget class="QRadioButton" name="radioButton_BlackDMDMask">
        <property name="text">
-        <string>Black Mask</string>
+        <string>DMDCam2 Mask</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -1103,7 +1212,7 @@
      <item row="0" column="2" colspan="2">
       <widget class="QRadioButton" name="radioButton_WhiteDMDMask">
        <property name="text">
-        <string>White Mask</string>
+        <string>DMDCam1 Mask</string>
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
@@ -1117,7 +1226,7 @@
      <rect>
       <x>930</x>
       <y>390</y>
-      <width>131</width>
+      <width>121</width>
       <height>273</height>
      </rect>
     </property>
@@ -1156,14 +1265,14 @@
      <item>
       <widget class="QPushButton" name="btn_WhiteDMD">
        <property name="text">
-        <string>White</string>
+        <string>DMDCam1</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btn_BlackDMD">
        <property name="text">
-        <string>Black</string>
+        <string>DMDCam2</string>
        </property>
       </widget>
      </item>
@@ -1199,7 +1308,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1070</width>
+     <width>1062</width>
      <height>21</height>
     </rect>
    </property>
